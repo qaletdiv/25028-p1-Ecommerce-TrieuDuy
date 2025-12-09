@@ -6,6 +6,10 @@ import { ProductCard, type Product } from './components/ProductCard';
 import { FilterPanel, type FilterState } from './components/FilterPanel';
 import { SortDropdown, type SortOption } from './components/SortDropdown';
 import { Footer } from './components/Footer';
+import { Cart } from './pages/Cart';
+import { Favorites } from './pages/Favorites';
+import { HelpCenter } from './pages/HelpCenter';
+import { useCartStore } from './store/cartStore';
 import { projectId, publicAnonKey } from './utils/supabase/info';
 
 const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-44763aa1`;
@@ -14,7 +18,7 @@ const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-
 const USER_ID = 'demo-user-001';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'catalogue'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'catalogue' | 'cart' | 'favorites' | 'help'>('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [cart, setCart] = useState<Array<{ productId: string; quantity: number }>>([]);
@@ -166,6 +170,18 @@ export default function App() {
     setCurrentPage('catalogue');
   }, []);
 
+  const handleNavigateCart = useCallback(() => {
+    setCurrentPage('cart');
+  }, []);
+
+  const handleNavigateFavorites = useCallback(() => {
+    setCurrentPage('favorites');
+  }, []);
+
+  const handleNavigateHelp = useCallback(() => {
+    setCurrentPage('help');
+  }, []);
+
   const handleCloseMobileFilters = useCallback(() => {
     setMobileFiltersOpen(false);
   }, []);
@@ -234,7 +250,9 @@ export default function App() {
     return result;
   }, [products, searchQuery, filters, sortOption]);
 
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  // Use Zustand cart store
+  const { getItemCount } = useCartStore();
+  const cartItemCount = getItemCount();
 
   if (loading) {
     return (
@@ -243,6 +261,62 @@ export default function App() {
           <Loader className="w-12 h-12 animate-spin text-orange-500 mx-auto mb-4" />
           <p className="text-gray-900 dark:text-white font-medium">Đang tải sản phẩm...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Show Cart Page
+  if (currentPage === 'cart') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Header 
+          cartCount={cartItemCount}
+          onSearch={setSearchQuery}
+          searchQuery={searchQuery}
+          onNavigateHome={handleNavigateHome}
+          onNavigateCart={handleNavigateCart}
+          onNavigateFavorites={handleNavigateFavorites}
+          onNavigateHelp={handleNavigateHelp}
+        />
+        <Cart onNavigateHome={handleNavigateHome} />
+        <Footer />
+      </div>
+    );
+  }
+
+  // Show Favorites Page
+  if (currentPage === 'favorites') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Header 
+          cartCount={cartItemCount}
+          onSearch={setSearchQuery}
+          searchQuery={searchQuery}
+          onNavigateHome={handleNavigateHome}
+          onNavigateCart={handleNavigateCart}
+          onNavigateFavorites={handleNavigateFavorites}
+          onNavigateHelp={handleNavigateHelp}
+        />
+        <Favorites onNavigateHome={handleNavigateHome} />
+        <Footer />
+      </div>
+    );
+  }
+
+  // Show Help Center Page
+  if (currentPage === 'help') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Header 
+          cartCount={cartItemCount}
+          onSearch={setSearchQuery}
+          searchQuery={searchQuery}
+          onNavigateHome={handleNavigateHome}
+          onNavigateCart={handleNavigateCart}
+          onNavigateFavorites={handleNavigateFavorites}
+          onNavigateHelp={handleNavigateHelp}
+        />
+        <HelpCenter />
       </div>
     );
   }
@@ -256,6 +330,9 @@ export default function App() {
           onSearch={setSearchQuery}
           searchQuery={searchQuery}
           onNavigateHome={handleNavigateHome}
+          onNavigateCart={handleNavigateCart}
+          onNavigateFavorites={handleNavigateFavorites}
+          onNavigateHelp={handleNavigateHelp}
         />
         <HomePage 
           onShopNow={handleShopNow} 
@@ -274,6 +351,9 @@ export default function App() {
         onSearch={setSearchQuery}
         searchQuery={searchQuery}
         onNavigateHome={handleNavigateHome}
+        onNavigateCart={handleNavigateCart}
+        onNavigateFavorites={handleNavigateFavorites}
+        onNavigateHelp={handleNavigateHelp}
       />
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8">
