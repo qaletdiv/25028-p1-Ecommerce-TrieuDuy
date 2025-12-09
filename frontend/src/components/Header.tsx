@@ -31,18 +31,10 @@ function useScrollAnimation(utilityBarRef: React.RefObject<HTMLDivElement>) {
           isHidden.current = shouldHide;
           
           if (utilityBarRef.current) {
-            // Update DOM trực tiếp, KHÔNG trigger re-render
-            if (shouldHide) {
-              // ẨN HOÀN TOÀN - không chừa khoảng trắng
-              utilityBarRef.current.style.maxHeight = '0';
-              utilityBarRef.current.style.opacity = '0';
-              utilityBarRef.current.style.overflow = 'hidden';
-            } else {
-              // HIỆN LẠI
-              utilityBarRef.current.style.maxHeight = '40px';
-              utilityBarRef.current.style.opacity = '1';
-              utilityBarRef.current.style.overflow = 'visible';
-            }
+            // Dùng translateY để tránh giật (GPU friendly)
+            utilityBarRef.current.style.transform = shouldHide ? 'translateY(-100%)' : 'translateY(0)';
+            utilityBarRef.current.style.opacity = shouldHide ? '0' : '1';
+            utilityBarRef.current.style.pointerEvents = shouldHide ? 'none' : 'auto';
           }
         }
 
@@ -79,11 +71,10 @@ const UtilityBar = memo(function UtilityBar({
       className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800"
       style={{ 
         height: '40px',
-        maxHeight: '40px', // Để JS có thể set về 0
+        transform: 'translateY(0)',
         opacity: 1,
-        overflow: 'visible',
-        transition: 'max-height 0.3s ease-out, opacity 0.3s ease-out',
-        willChange: 'max-height' // Animate max-height
+        transition: 'transform 0.25s ease, opacity 0.25s ease',
+        willChange: 'transform, opacity'
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ height: '40px' }}>

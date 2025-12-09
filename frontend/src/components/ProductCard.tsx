@@ -114,11 +114,11 @@ export const ProductCard = memo(function ProductCard({ product, isWishlisted, on
         {/* Price */}
         <div className="flex items-baseline gap-2 mb-4">
           <span className="text-2xl text-gray-900 dark:text-white font-bold">
-            ${product.price.toFixed(2)}
+            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
           </span>
           {product.originalPrice && (
             <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-              ${product.originalPrice.toFixed(2)}
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.originalPrice)}
             </span>
           )}
         </div>

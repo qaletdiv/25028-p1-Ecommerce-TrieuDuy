@@ -27,7 +27,7 @@ export default function App() {
   const [sortOption, setSortOption] = useState<SortOption>('relevance');
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
-    priceRange: [0, 2000],
+    priceRange: [0, 1000000], // default: show all
     minRating: 0
   });
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -217,11 +217,13 @@ export default function App() {
       );
     }
 
-    // Apply price filter
-    result = result.filter(product => 
-      product.price >= filters.priceRange[0] && 
-      product.price <= filters.priceRange[1]
-    );
+    // Apply price filter only when not default
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) {
+      result = result.filter(product => 
+        product.price >= filters.priceRange[0] && 
+        product.price <= filters.priceRange[1]
+      );
+    }
 
     // Apply rating filter
     if (filters.minRating > 0) {
