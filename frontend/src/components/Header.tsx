@@ -63,11 +63,13 @@ function useScrollAnimation(utilityBarRef: React.RefObject<HTMLDivElement>) {
 const UtilityBar = memo(function UtilityBar({ 
   utilityBarRef,
   isDark, 
-  onToggleDarkMode 
+  onToggleDarkMode,
+  onNavigateHelp
 }: { 
   utilityBarRef: React.RefObject<HTMLDivElement>;
   isDark: boolean; 
   onToggleDarkMode: () => void;
+  onNavigateHelp?: () => void;
 }) {
   return (
     <div 
@@ -271,6 +273,7 @@ export const Header = memo(function Header({ cartCount, onSearch, searchQuery, o
         utilityBarRef={utilityBarRef}
         isDark={isDark}
         onToggleDarkMode={toggleDarkMode}
+        onNavigateHelp={onNavigateHelp}
       />
 
       {/* Main Header - KHÔNG có blur riêng */}
