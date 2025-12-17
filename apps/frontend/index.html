@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Store</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Ecommerce</div>
+                
+                <nav class="nav">
+                    <a href="#" class="nav-link active" onclick="showHomePage(event)">Trang chủ</a>
+                    <a href="#products" class="nav-link" onclick="showProductsPage(event)">Sản phẩm</a>
+                    <a href="#support" class="nav-link" onclick="showSupportPage(event)">Liên hệ</a>
+                </nav>
+                
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn-icon" id="favoritesBtn">
+                        Yêu thích (<span id="favoritesCount">0</span>)
+                    </button>
+                    <button class="btn-icon" id="cartBtn">
+                        Giỏ hàng (<span id="cartCount">0</span>)
+                    </button>
+                    <!-- Khi chưa đăng nhập: hiển thị Đăng nhập / Đăng ký -->
+                    <button class="btn-primary" id="loginBtn">Đăng nhập</button>
+                    <button class="btn-secondary" id="registerBtn">Đăng ký</button>
+                    <!-- Dropdown tài khoản khi đã đăng nhập -->
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <button class="user-dropdown-toggle" id="userDropdownToggle">
+                            <span class="user-icon">👤</span>
+                            <span id="userDropdownName">Tài khoản</span>
+                            <span class="user-caret">▾</span>
+                        </button>
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <button class="dropdown-item" onclick="showAccountPage(event)">Hồ sơ / Đơn hàng</button>
+                            <button class="dropdown-item" onclick="goToCheckout()">Thanh toán</button>
+                            <button class="dropdown-item" onclick="logout()">Đăng xuất</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Carousel -->
+    <section class="hero-carousel">
+        <div class="carousel-container">
+            <div class="carousel-slides" id="carouselSlides">
+                <!-- Slides will be rendered by JavaScript -->
+            </div>
+            <div class="carousel-dots" id="carouselDots">
+                <!-- Dots will be rendered by JavaScript -->
+            </div>
+            <button class="carousel-btn carousel-prev" onclick="changeSlide(-1)">‹</button>
+            <button class="carousel-btn carousel-next" onclick="changeSlide(1)">›</button>
+        </div>
+    </section>
+
+    <!-- Signature Section -->
+    <section class="signature-section">
+        <div class="container">
+            <div class="signature-content">
+                <h2 class="signature-title">Thời trang thể thao cho mọi khoảnh khắc</h2>
+                <p class="signature-text">Khám phá bộ sưu tập đa dạng với chất lượng cao cấp và thiết kế hiện đại</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Full Width (Nike Style) -->
+    <section id="featured" class="featured-fullwidth">
+        <div id="featuredProductsFull" class="featured-products-container">
+            <!-- Featured products will be rendered here -->
+        </div>
+    </section>
+
+    <!-- Sneaker Rotation Section -->
+    <section class="sneaker-rotation-section">
+        <div class="container">
+            <div class="rotation-header">
+                <h2 class="rotation-title">Làm mới bộ sưu tập</h2>
+                <div class="rotation-controls">
+                    <button class="btn-rotation-shop" onclick="showProductsPage(event)">Mua ngay</button>
+                    <button class="rotation-nav-btn" onclick="scrollRotationProducts(-1)">‹</button>
+                    <button class="rotation-nav-btn" onclick="scrollRotationProducts(1)">›</button>
+                </div>
+            </div>
+            <div class="rotation-products-container">
+                <div class="rotation-products" id="rotationProducts">
+                    <!-- Products will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotional Banners -->
+    <section class="promo-banners">
+        <div class="promo-banner" id="promoBanner1" onclick="showProductsPage(event)">
+            <!-- Banner 1 will be rendered by JavaScript -->
+        </div>
+        <div class="promo-banner" id="promoBanner2" onclick="showProductsPage(event)">
+            <!-- Banner 2 will be rendered by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Shop by Icons Section -->
+    <section class="shop-by-icons-section">
+        <div class="container">
+            <h2 class="icons-section-title">Mua theo biểu tượng</h2>
+            <div class="icons-carousel-container">
+                <button class="icons-nav-btn icons-prev" onclick="scrollIconsCarousel(-1)">‹</button>
+                <div class="icons-carousel" id="iconsCarousel">
+                    <!-- Icons will be rendered here -->
+                </div>
+                <button class="icons-nav-btn icons-next" onclick="scrollIconsCarousel(1)">›</button>
+            </div>
+            <div class="icons-indicator" id="iconsIndicator">
+                <!-- Indicator will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Products Section -->
+    <section id="latest" class="products-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Sản phẩm mới nhất</h2>
+                <p class="section-subtitle">Những sản phẩm mới được thêm vào</p>
+            </div>
+            <div id="latestGrid" class="products-grid">
+                <!-- Latest products will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- All Products -->
+    <section id="products" class="products-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Tất cả sản phẩm</h2>
+                <p class="section-subtitle" id="productCount">0 sản phẩm phù hợp</p>
+            </div>
+
+            <!-- Filters and Sort -->
+            <div class="filters-bar">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Danh mục</label>
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="">Tất cả</option>
+                            <option value="Giày">Giày</option>
+                            <option value="Dép">Dép</option>
+                            <option value="Áo">Áo</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Giá từ</label>
+                        <input type="number" id="minPriceFilter" class="filter-input" placeholder="0" value="0" />
+                    </div>
+                    <div class="filter-group">
+                        <label>Giá đến</label>
+                        <input type="number" id="maxPriceFilter" class="filter-input" placeholder="10000000" value="10000000" />
+                    </div>
+                    <div class="filter-group">
+                        <label>Đánh giá tối thiểu</label>
+                        <select id="minRatingFilter" class="filter-select">
+                            <option value="0">Tất cả</option>
+                            <option value="4">4★ trở lên</option>
+                            <option value="4.5">4.5★ trở lên</option>
+                            <option value="4.7">4.7★ trở lên</option>
+                            <option value="4.8">4.8★ trở lên</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Sắp xếp</label>
+                        <select id="sortFilter" class="filter-select">
+                            <option value="default">Liên quan</option>
+                            <option value="price-asc">Giá tăng dần</option>
+                            <option value="price-desc">Giá giảm dần</option>
+                            <option value="name-asc">Tên A-Z</option>
+                            <option value="name-desc">Tên Z-A</option>
+                            <option value="rating-desc">Đánh giá cao nhất</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn-clear-filter" onclick="clearFilters()">Xóa lọc</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="productsGrid" class="products-grid">
+                <!-- Products will be rendered here by JavaScript -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="pagination">
+                <!-- Pagination will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Suggested Products -->
+    <section class="suggested-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Sản phẩm gợi ý</h2>
+                <p class="section-subtitle">Dựa trên sản phẩm bạn đang xem</p>
+            </div>
+            <div id="suggestedGrid" class="products-grid">
+                <!-- Suggested products will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section id="support" class="support-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Hỗ trợ khách hàng</h2>
+                <p class="section-subtitle">Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+            </div>
+
+            <div class="support-content">
+                <!-- FAQ Section -->
+                <div class="support-block">
+                    <h3>Câu hỏi thường gặp (FAQ)</h3>
+                    <div class="faq-list">
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                <span>Làm thế nào để đặt hàng?</span>
+                                <span class="faq-icon">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Bạn có thể đặt hàng bằng cách thêm sản phẩm vào giỏ hàng, sau đó nhấn nút "Thanh toán" để hoàn tất đơn hàng.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                <span>Thời gian giao hàng là bao lâu?</span>
+                                <span class="faq-icon">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Thời gian giao hàng từ 3-7 ngày làm việc tùy theo khu vực. Đối với các đơn hàng trong nội thành, thời gian giao hàng có thể từ 1-2 ngày.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                <span>Chính sách đổi trả như thế nào?</span>
+                                <span class="faq-icon">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Chúng tôi chấp nhận đổi trả trong vòng 7 ngày kể từ ngày nhận hàng. Sản phẩm phải còn nguyên vẹn, chưa sử dụng và còn đầy đủ tem mác.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                <span>Các phương thức thanh toán nào được chấp nhận?</span>
+                                <span class="faq-icon">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Chúng tôi chấp nhận thanh toán bằng tiền mặt khi nhận hàng (COD), chuyển khoản ngân hàng, và các loại thẻ tín dụng/ghi nợ.</p>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="toggleFaq(this)">
+                                <span>Làm sao để theo dõi đơn hàng?</span>
+                                <span class="faq-icon">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Sau khi đặt hàng thành công, bạn sẽ nhận được email xác nhận kèm mã đơn hàng. Bạn có thể sử dụng mã này để theo dõi trạng thái đơn hàng trên website.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="support-block">
+                    <h3>Liên hệ với chúng tôi</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">📞</div>
+                            <div class="contact-details">
+                                <h4>Hotline</h4>
+                                <p>1900 1234</p>
+                                <p class="contact-note">Thứ 2 - Chủ nhật: 8:00 - 22:00</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">✉️</div>
+                            <div class="contact-details">
+                                <h4>Email</h4>
+                                <p>support@ecommerce.com</p>
+                                <p class="contact-note">Phản hồi trong vòng 24h</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div class="contact-details">
+                                <h4>Địa chỉ</h4>
+                                <p>123 Đường ABC, Quận XYZ</p>
+                                <p>TP. Hồ Chí Minh, Việt Nam</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help Topics -->
+                <div class="support-block">
+                    <h3>Chủ đề hỗ trợ</h3>
+                    <div class="help-topics">
+                        <div class="help-topic-card">
+                            <div class="help-topic-icon">🛒</div>
+                            <h4>Đặt hàng & Thanh toán</h4>
+                            <p>Hướng dẫn đặt hàng và các phương thức thanh toán</p>
+                        </div>
+                        <div class="help-topic-card">
+                            <div class="help-topic-icon">🚚</div>
+                            <h4>Vận chuyển</h4>
+                            <p>Thông tin về phí vận chuyển và thời gian giao hàng</p>
+                        </div>
+                        <div class="help-topic-card">
+                            <div class="help-topic-icon">↩️</div>
+                            <h4>Đổi trả</h4>
+                            <p>Chính sách đổi trả và hoàn tiền</p>
+                        </div>
+                        <div class="help-topic-card">
+                            <div class="help-topic-icon">💳</div>
+                            <h4>Tài khoản</h4>
+                            <p>Quản lý tài khoản và thông tin cá nhân</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal product-modal">
+        <div class="modal-content product-modal-content">
+            <span class="close">&times;</span>
+            <div id="modalProductDetails" class="modal-product-details">
+                <!-- Product details will be rendered here -->
+            </div>
+            <!-- Suggested Products in Modal -->
+            <div class="modal-suggested-section">
+                <h3 class="modal-suggested-title">Sản phẩm gợi ý</h3>
+                <div id="modalSuggestedProducts" class="modal-suggested-grid">
+                    <!-- Suggested products will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Giỏ hàng</h2>
+            <div id="cartItems" class="cart-items">
+                <!-- Cart items will be rendered here -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <strong>Tổng cộng: <span id="cartTotal">0₫</span></strong>
+                </div>
+                <button class="btn-primary btn-large" onclick="goToCheckout()">Thanh toán</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div id="favoritesModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Yêu thích</h2>
+            <div id="favoritesItems" class="favorites-items">
+                <!-- Favorite items will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <span class="close">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Đăng nhập</button>
+                <button class="auth-tab" data-tab="register">Đăng ký</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <h2>Đăng nhập</h2>
+                <form id="loginFormElement" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mật khẩu</label>
+                        <input type="password" id="loginPassword" required />
+                    </div>
+                    <button type="submit" class="btn-primary btn-large" style="width: 100%;">Đăng nhập</button>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form">
+                <h2>Đăng ký</h2>
+                <form id="registerFormElement" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Họ và tên</label>
+                        <input type="text" id="registerName" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mật khẩu</label>
+                        <input type="password" id="registerPassword" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Nhập lại mật khẩu</label>
+                        <input type="password" id="registerConfirmPassword" required />
+                    </div>
+                    <button type="submit" class="btn-primary btn-large" style="width: 100%;">Đăng ký</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Page -->
+    <section id="checkout" class="checkout-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Thanh toán</h2>
+                <p class="section-subtitle">Nhập thông tin giao hàng và xác nhận đơn hàng</p>
+            </div>
+
+            <div class="checkout-layout">
+                <div class="checkout-form-block">
+                    <h3>Thông tin giao hàng</h3>
+                    <form id="checkoutForm" onsubmit="submitCheckout(event)">
+                        <div class="form-group">
+                            <label>Họ và tên</label>
+                            <input type="text" id="shippingName" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="tel" id="shippingPhone" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ giao hàng</label>
+                            <textarea id="shippingAddress" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary btn-large">Xác nhận đơn hàng</button>
+                    </form>
+                </div>
+
+                <div class="checkout-summary-block">
+                    <h3>Tóm tắt đơn hàng</h3>
+                    <div id="checkoutSummaryItems" class="checkout-summary-items">
+                        <!-- Items sẽ được render bằng JavaScript -->
+                    </div>
+                    <div class="checkout-summary-total">
+                        <span>Tổng tiền:</span>
+                        <strong id="checkoutSummaryTotal">0₫</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Confirmation Page -->
+    <section id="orderConfirmation" class="order-confirmation-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Đặt hàng thành công</h2>
+                <p class="section-subtitle">Cảm ơn bạn đã mua sắm tại Ecommerce</p>
+            </div>
+
+            <div class="order-confirmation-content">
+                <p class="order-confirmation-message">
+                    Đơn hàng của bạn đã được ghi nhận. Chúng tôi sẽ liên hệ và giao hàng trong thời gian sớm nhất.
+                </p>
+
+                <div id="orderConfirmationSummary" class="order-confirmation-summary">
+                    <!-- Tóm tắt đơn hàng sẽ được render bằng JavaScript -->
+                </div>
+
+                <div class="order-confirmation-actions">
+                    <button class="btn-primary" onclick="showHomePage(event)">Tiếp tục mua sắm</button>
+                    <button class="btn-secondary" onclick="showAccountPage(event)">Xem lịch sử đơn hàng</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Account Page -->
+    <section id="account" class="account-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Tài khoản của tôi</h2>
+                <p class="section-subtitle">Quản lý thông tin cá nhân và lịch sử đơn hàng</p>
+            </div>
+
+            <div class="account-layout">
+                <div class="account-info-block">
+                    <h3>Thông tin cá nhân</h3>
+                    <p><strong>Họ và tên:</strong> <span id="accountName">-</span></p>
+                    <p><strong>Email:</strong> <span id="accountEmail">-</span></p>
+                </div>
+
+                <div class="account-orders-block">
+                    <h3>Lịch sử đơn hàng</h3>
+                    <div id="accountOrdersEmpty" class="account-orders-empty" style="display: none;">
+                        Bạn chưa có đơn hàng nào.
+                    </div>
+                    <div id="accountOrdersList" class="account-orders-list">
+                        <!-- Lịch sử đơn hàng sẽ được render bằng JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cancel Order Modal -->
+    <div id="cancelOrderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('cancelOrderModal')">&times;</span>
+            <h2>Hủy đơn hàng</h2>
+            <p>Vui lòng chọn lý do hủy đơn hàng:</p>
+
+            <form id="cancelOrderForm" onsubmit="submitCancelOrder(event)">
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="cancelReason" value="Đổi ý, không muốn mua nữa" checked>
+                        Đổi ý, không muốn mua nữa
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="cancelReason" value="Đặt nhầm sản phẩm / size">
+                        Đặt nhầm sản phẩm / size
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="cancelReason" value="Tìm được nơi khác giá tốt hơn">
+                        Tìm được nơi khác giá tốt hơn
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="cancelReason" value="Lý do khác" id="cancelReasonOtherRadio">
+                        Lý do khác
+                    </label>
+                    <textarea id="cancelReasonOtherText" rows="3" placeholder="Nhập lý do của bạn..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
+                    <button type="button" class="btn-secondary" onclick="closeModal('cancelOrderModal')">Đóng</button>
+                    <button type="submit" class="btn-primary">Xác nhận hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Về chúng tôi</h3>
+                    <p>Ecommerce - Cửa hàng thời trang thể thao hàng đầu Việt Nam</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="#">Trang chủ</a></li>
+                        <li><a href="#products">Sản phẩm</a></li>
+                        <li><a href="#">Giới thiệu</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Hỗ trợ</h3>
+                    <ul>
+                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                        <li><a href="#">Vận chuyển</a></li>
+                        <li><a href="#">Thanh toán</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <p>Email: support@ecommerce.com</p>
+                    <p>Hotline: 1900 1234</p>
+                    <p>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ecommerce. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Data -->
+    <script src="js/products-data.js"></script>
+    <!-- Utils -->
+    <script src="js/utils.js"></script>
+    <!-- Core Features -->
+    <script src="js/cart.js"></script>
+    <script src="js/favorites.js"></script>
+    <!-- Products -->
+    <script src="js/products-render.js"></script>
+    <script src="js/products-filter.js"></script>
+    <script src="js/products-modal.js"></script>
+    <!-- UI Components -->
+    <script src="js/carousel.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/promo-banners.js"></script>
+    <!-- Navigation & Orders -->
+    <script src="js/navigation.js"></script>
+    <script src="js/orders.js"></script>
+    <!-- Auth -->
+    <script src="js/auth.js"></script>
+    <!-- Main -->
+    <script src="js/main.js"></script>
+  </body>
+</html>
