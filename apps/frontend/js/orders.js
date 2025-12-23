@@ -39,7 +39,7 @@ function goToCheckout() {
 
     // Render tóm tắt đơn hàng
     renderCheckoutSummary();
-    
+
     // Render saved addresses
     if (typeof renderSavedAddresses === 'function') {
         renderSavedAddresses();
@@ -116,7 +116,7 @@ function submitCheckout(event) {
     if (!isUserLoggedIn || !isUserLoggedIn()) {
         alert('Vui lòng đăng nhập trước khi xác nhận đơn hàng.');
         if (typeof openAuthModal === 'function') {
-            openAuthModal('login');
+        openAuthModal('login');
         }
         if (typeof setLastRoute === 'function') {
             setLastRoute('checkout');
@@ -183,7 +183,7 @@ function submitCheckout(event) {
         if (!phone || !/^[0-9]{10,11}$/.test(phone)) {
             alert('Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).');
             phoneInput.focus();
-            return;
+        return;
         }
 
         if (!address || address.length < 10) {
@@ -213,7 +213,7 @@ function submitCheckout(event) {
 
     // Lưu đơn hàng vào user (lịch sử)
     addOrderToUser(order);
-    
+
     // Lưu địa chỉ nếu user nhập mới và chọn lưu
     const saveAddressCheckbox = document.getElementById('saveAddressCheckbox');
     if (!selectedAddressRadio && saveAddressCheckbox && saveAddressCheckbox.checked && typeof addUserAddress === 'function') {
@@ -232,7 +232,7 @@ function submitCheckout(event) {
     if (checkoutForm) {
         checkoutForm.reset();
     }
-    
+
     // Re-render saved addresses
     if (typeof renderSavedAddresses === 'function') {
         renderSavedAddresses();
