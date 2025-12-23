@@ -144,3 +144,32 @@ function performHeroSearch() {
     }
 }
 
+// Mobile menu toggle
+function initMobileMenu() {
+    const menuToggle = document.getElementById('mobileMenuToggle');
+    const nav = document.getElementById('mainNav');
+    
+    if (menuToggle && nav) {
+        menuToggle.addEventListener('click', function() {
+            menuToggle.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+        
+        // Close menu when clicking on nav links
+        nav.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                menuToggle.classList.remove('active');
+                nav.classList.remove('active');
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!menuToggle.contains(event.target) && !nav.contains(event.target)) {
+                menuToggle.classList.remove('active');
+                nav.classList.remove('active');
+            }
+        });
+    }
+}
+

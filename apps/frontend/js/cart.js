@@ -17,14 +17,19 @@ const cartManager = {
         this.updateCartUI();
     },
     
-    // Add product to cart (optional quantity)
-    addToCart(productId, quantity = 1) {
+    // Add product to cart (with size and quantity)
+    addToCart(productId, quantity = 1, size = null) {
         if (!isUserLoggedIn || !isUserLoggedIn()) {
             if (typeof setLastRoute === 'function') {
                 setLastRoute('cart');
             }
             alert('Vui lòng đăng nhập trước khi thêm vào giỏ hàng.');
             openAuthModal('login');
+            return;
+        }
+
+        if (!size) {
+            alert('Vui lòng chọn size trước khi thêm vào giỏ hàng.');
             return;
         }
 
@@ -36,7 +41,8 @@ const cartManager = {
         const product = getProductById(productId);
         if (!product) return;
         
-        const existingItem = this.items.find(item => item.id === productId);
+        // Tìm item cùng sản phẩm VÀ cùng size
+        const existingItem = this.items.find(item => item.id === productId && item.size === size);
         
         if (existingItem) {
             existingItem.quantity += qty;
@@ -46,7 +52,8 @@ const cartManager = {
                 name: product.name,
                 price: product.price,
                 image: product.image,
-                quantity: qty
+                quantity: qty,
+                size: size
             });
         }
         
@@ -54,22 +61,22 @@ const cartManager = {
         this.showNotification('Đã thêm vào giỏ hàng!');
     },
     
-    // Remove item from cart
-    removeFromCart(productId) {
-        this.items = this.items.filter(item => item.id !== productId);
+    // Remove item from cart (by index to handle same product with different sizes)
+    removeFromCart(index) {
+        this.items.splice(index, 1);
         this.save();
         this.renderCart();
     },
     
-    // Update quantity
-    updateQuantity(productId, change) {
-        const item = this.items.find(item => item.id === productId);
-        if (!item) return;
+    // Update quantity (by index)
+    updateQuantity(index, change) {
+        if (index < 0 || index >= this.items.length) return;
         
+        const item = this.items[index];
         item.quantity += change;
         
         if (item.quantity <= 0) {
-            this.removeFromCart(productId);
+            this.removeFromCart(index);
         } else {
             this.save();
             this.renderCart();
@@ -107,19 +114,20 @@ const cartManager = {
             return;
         }
         
-        cartItems.innerHTML = this.items.map(item => `
+        cartItems.innerHTML = this.items.map((item, index) => `
             <div class="cart-item">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='${FALLBACK_IMAGE}'">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.style.display='none'">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-size" style="font-size: 0.9rem; color: #7f8c8d; margin-top: 0.25rem;">Size: ${item.size || 'N/A'}</div>
                     <div class="cart-item-price">${formatPrice(item.price)}</div>
                 </div>
                 <div class="cart-item-quantity">
-                    <button class="quantity-btn" onclick="cartManager.updateQuantity(${item.id}, -1)">-</button>
+                    <button class="quantity-btn" onclick="cartManager.updateQuantity(${index}, -1)">-</button>
                     <span style="min-width: 30px; text-align: center;">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="cartManager.updateQuantity(${item.id}, 1)">+</button>
+                    <button class="quantity-btn" onclick="cartManager.updateQuantity(${index}, 1)">+</button>
                 </div>
-                <button onclick="cartManager.removeFromCart(${item.id})" style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Xóa</button>
+                <button onclick="cartManager.removeFromCart(${index})" style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Xóa</button>
             </div>
         `).join('');
         

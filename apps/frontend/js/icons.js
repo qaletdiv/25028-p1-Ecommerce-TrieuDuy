@@ -35,7 +35,7 @@ function initShopByIcons() {
         return `
             <div class="icon-card" onclick="filterByIcon('${icon.filter}')">
                 <div class="icon-image-container">
-                    <img src="${icon.image}" alt="${icon.name}" onerror="this.src='${FALLBACK_IMAGE}'">
+                    <img src="${icon.image}" alt="${icon.name}" onerror="this.style.display='none'">
                 </div>
                 <div class="icon-name">${icon.name}</div>
                 <div class="icon-product-count">${iconProducts.length} sản phẩm</div>

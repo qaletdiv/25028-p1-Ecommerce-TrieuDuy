@@ -1,5 +1,11 @@
 // Main Application
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dark mode first (if not already initialized)
+    if (typeof initDarkMode === 'function' && typeof setupDarkModeToggle === 'function') {
+        initDarkMode();
+        setupDarkModeToggle();
+    }
+    
     // Initialize auth & managers
     initAuth();
     cartManager.init();
@@ -17,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup event listeners
     setupEventListeners();
+    initMobileMenu();
     
     // Hide sections that should not show on home page initially
     const latest = document.getElementById('latest');
@@ -34,8 +41,50 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     // Header search input
     const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    
     if (searchInput) {
+        // Search khi gõ (real-time)
         searchInput.addEventListener('input', filterAndSortProducts);
+        
+        // Search khi nhấn Enter
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+    }
+    
+    // Search button click
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            performSearch();
+        });
+    }
+    
+    // Function to perform search
+    function performSearch() {
+        const searchValue = searchInput?.value.trim();
+        if (searchValue) {
+            // Add to search history if function exists
+            if (typeof addToSearchHistory === 'function') {
+                addToSearchHistory(searchValue);
+            }
+            // Chuyển đến trang sản phẩm nếu đang ở trang khác
+            if (typeof showProductsPage === 'function') {
+                showProductsPage(null);
+            }
+            filterAndSortProducts();
+            // Scroll to products section
+            setTimeout(() => {
+                const productsSection = document.getElementById('products');
+                if (productsSection) {
+                    productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
     }
     
     // Hero search input

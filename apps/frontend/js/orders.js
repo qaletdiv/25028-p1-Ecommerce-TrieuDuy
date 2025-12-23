@@ -39,6 +39,11 @@ function goToCheckout() {
 
     // Render tóm tắt đơn hàng
     renderCheckoutSummary();
+    
+    // Render saved addresses
+    if (typeof renderSavedAddresses === 'function') {
+        renderSavedAddresses();
+    }
 
     // Ẩn các section khác, chỉ hiển thị checkout
     const sectionsToHide = ['featured', 'latest', 'products', 'support'];
@@ -80,7 +85,7 @@ function renderCheckoutSummary() {
     if (!itemsContainer || !totalEl) return;
 
     if (!cartManager || cartManager.items.length === 0) {
-        itemsContainer.innerHTML = '<p>Giỏ hàng trống.</p>';
+        itemsContainer.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 1rem;">Giỏ hàng trống.</p>';
         totalEl.textContent = '0₫';
         return;
     }
@@ -89,7 +94,10 @@ function renderCheckoutSummary() {
         <div class="checkout-summary-item">
             <div class="checkout-summary-item-main">
                 <span class="checkout-item-name">${item.name}</span>
-                <span class="checkout-item-qty">x${item.quantity}</span>
+                <div class="checkout-item-details">
+                    <span class="checkout-item-size">Size: ${item.size || 'N/A'}</span>
+                    <span class="checkout-item-qty">Số lượng: x${item.quantity}</span>
+                </div>
             </div>
             <div class="checkout-summary-item-price">
                 ${formatPrice(item.price * item.quantity)}
@@ -104,30 +112,85 @@ function renderCheckoutSummary() {
 function submitCheckout(event) {
     event.preventDefault();
 
-    if (!isUserLoggedIn()) {
+    // Kiểm tra lại user đã đăng nhập
+    if (!isUserLoggedIn || !isUserLoggedIn()) {
         alert('Vui lòng đăng nhập trước khi xác nhận đơn hàng.');
-        openAuthModal('login');
+        if (typeof openAuthModal === 'function') {
+            openAuthModal('login');
+        }
+        if (typeof setLastRoute === 'function') {
+            setLastRoute('checkout');
+        }
         return;
     }
 
-    if (!cartManager || cartManager.items.length === 0) {
-        alert('Giỏ hàng đang trống.');
+    // Kiểm tra lại có sản phẩm trong giỏ hàng
+    if (!cartManager || !cartManager.items || cartManager.items.length === 0) {
+        alert('Giỏ hàng đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.');
+        if (typeof showHomePage === 'function') {
+            showHomePage(null);
+        }
         return;
     }
 
     const user = getCurrentUser();
     if (!user) {
         alert('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.');
+        if (typeof openAuthModal === 'function') {
+            openAuthModal('login');
+        }
         return;
     }
 
-    const name = document.getElementById('shippingName').value.trim();
-    const phone = document.getElementById('shippingPhone').value.trim();
-    const address = document.getElementById('shippingAddress').value.trim();
+    // Kiểm tra xem user đã chọn địa chỉ đã lưu hay nhập mới
+    const selectedAddressRadio = document.querySelector('input[name="selectedAddress"]:checked');
+    let name, phone, address;
+    
+    if (selectedAddressRadio && typeof loadUserAddresses === 'function') {
+        // User chọn địa chỉ đã lưu
+        const addresses = loadUserAddresses();
+        const selectedAddress = addresses.find(addr => addr.id === selectedAddressRadio.value);
+        if (selectedAddress) {
+            name = selectedAddress.name;
+            phone = selectedAddress.phone;
+            address = selectedAddress.address;
+        } else {
+            alert('Địa chỉ đã chọn không tồn tại. Vui lòng chọn lại.');
+            return;
+        }
+    } else {
+        // User nhập địa chỉ mới
+        const nameInput = document.getElementById('shippingName');
+        const phoneInput = document.getElementById('shippingPhone');
+        const addressInput = document.getElementById('shippingAddress');
 
-    if (!name || !phone || !address) {
-        alert('Vui lòng nhập đầy đủ thông tin giao hàng.');
-        return;
+        if (!nameInput || !phoneInput || !addressInput) {
+            alert('Có lỗi xảy ra. Vui lòng tải lại trang.');
+            return;
+        }
+
+        name = nameInput.value.trim();
+        phone = phoneInput.value.trim();
+        address = addressInput.value.trim();
+
+        // Validation cho địa chỉ mới
+        if (!name || name.length < 2) {
+            alert('Vui lòng nhập họ và tên hợp lệ (ít nhất 2 ký tự).');
+            nameInput.focus();
+            return;
+        }
+
+        if (!phone || !/^[0-9]{10,11}$/.test(phone)) {
+            alert('Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).');
+            phoneInput.focus();
+            return;
+        }
+
+        if (!address || address.length < 10) {
+            alert('Vui lòng nhập địa chỉ giao hàng đầy đủ (ít nhất 10 ký tự).');
+            addressInput.focus();
+            return;
+        }
     }
 
     loadOrders();
@@ -150,16 +213,32 @@ function submitCheckout(event) {
 
     // Lưu đơn hàng vào user (lịch sử)
     addOrderToUser(order);
+    
+    // Lưu địa chỉ nếu user nhập mới và chọn lưu
+    const saveAddressCheckbox = document.getElementById('saveAddressCheckbox');
+    if (!selectedAddressRadio && saveAddressCheckbox && saveAddressCheckbox.checked && typeof addUserAddress === 'function') {
+        const shippingInfo = { name, phone, address, isDefault: false };
+        addUserAddress(shippingInfo);
+    }
 
-    // Xóa giỏ hàng
+    // Làm trống giỏ hàng sau khi đặt hàng thành công
     cartManager.items = [];
     cartManager.save();
     cartManager.renderCart();
+    cartManager.updateCartUI();
 
     // Reset form
-    document.getElementById('checkoutForm').reset();
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (checkoutForm) {
+        checkoutForm.reset();
+    }
+    
+    // Re-render saved addresses
+    if (typeof renderSavedAddresses === 'function') {
+        renderSavedAddresses();
+    }
 
-    // Hiển thị trang xác nhận
+    // Chuyển đến trang xác nhận đơn hàng
     showOrderConfirmation(order);
 }
 
@@ -204,7 +283,11 @@ function showOrderConfirmation(order) {
                 <h3>Sản phẩm</h3>
                 ${order.items.map(item => `
                     <div class="order-item">
-                        <span>${item.name} (x${item.quantity})</span>
+                        <div>
+                            <span>${item.name}</span>
+                            ${item.size ? `<span style="color: #7f8c8d; font-size: 0.9rem; margin-left: 0.5rem;">Size: ${item.size}</span>` : ''}
+                            <span style="color: #7f8c8d; font-size: 0.9rem; margin-left: 0.5rem;">x${item.quantity}</span>
+                        </div>
                         <span>${formatPrice(item.price * item.quantity)}</span>
                     </div>
                 `).join('')}

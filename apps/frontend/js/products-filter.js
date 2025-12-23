@@ -2,6 +2,17 @@
 
 // Filter and sort products
 function filterAndSortProducts() {
+    // Đảm bảo products đã được load
+    if (typeof loadProducts === 'function') {
+        loadProducts();
+    }
+    
+    // Kiểm tra products có dữ liệu
+    if (!products || products.length === 0) {
+        console.warn('Products array is empty');
+        return;
+    }
+    
     const categoryFilter = document.getElementById('categoryFilter')?.value || '';
     const sortFilter = document.getElementById('sortFilter')?.value || 'default';
     const searchInput = document.getElementById('searchInput')?.value.toLowerCase() || '';

@@ -7,7 +7,7 @@ function renderProductCard(product) {
     return `
         <div class="product-card" data-product-id="${product.id}">
             <div class="product-image">
-                <img src="${product.image}" alt="${product.name}" onerror="this.src='${FALLBACK_IMAGE}'">
+                <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.style.display='none'">
                 <button class="favorite-icon ${isFavorite ? 'active' : ''}" 
                         onclick="event.stopPropagation(); favoritesManager.toggleFavorite(${product.id})">
                     ${isFavorite ? '❤️' : '🤍'}
@@ -23,7 +23,7 @@ function renderProductCard(product) {
                 </div>
                 <div class="product-actions">
                     <button class="btn-view" onclick="event.stopPropagation(); showProductModal(${product.id})">Chi tiết</button>
-                    <button class="btn-add-cart" onclick="event.stopPropagation(); cartManager.addToCart(${product.id})">Thêm vào giỏ hàng</button>
+                    <button class="btn-add-cart" onclick="event.stopPropagation(); showProductModal(${product.id})">Thêm vào giỏ hàng</button>
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@ function initRotationProducts() {
     rotationContainer.innerHTML = rotationProducts.map(product => `
         <div class="rotation-product-card" onclick="showProductModal(${product.id})">
             <div class="rotation-product-image">
-                <img src="${product.image}" alt="${product.name}" onerror="this.src='${FALLBACK_IMAGE}'">
+                <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.style.display='none'">
             </div>
             <div class="rotation-product-info">
                 <div class="rotation-product-category">${product.category}</div>
@@ -122,7 +122,7 @@ function initRotationProducts() {
     rotationContainer.innerHTML = rotationProducts.map(product => `
         <div class="rotation-product-card" onclick="showProductModal(${product.id})">
             <div class="rotation-product-image">
-                <img src="${product.image}" alt="${product.name}" onerror="this.src='${FALLBACK_IMAGE}'">
+                <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.style.display='none'">
             </div>
             <div class="rotation-product-info">
                 <div class="rotation-product-category">${product.category}</div>

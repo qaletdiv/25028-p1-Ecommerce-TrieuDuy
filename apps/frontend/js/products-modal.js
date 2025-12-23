@@ -18,6 +18,9 @@ function showProductModal(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
     
+    // Reset selected size when opening modal
+    selectedSize = null;
+    
     const modal = document.getElementById('productModal');
     const modalContent = document.getElementById('modalProductDetails');
     const originalPrice = Math.round(product.price * 1.24); // Giả sử giá gốc cao hơn 24%
@@ -32,12 +35,12 @@ function showProductModal(productId) {
     modalContent.innerHTML = `
         <div class="modal-product-image-container">
             <div class="modal-main-image-wrapper">
-                <img id="modalMainImage" src="${images[0]}" alt="${product.name}" class="modal-product-image" onerror="this.src='${FALLBACK_IMAGE}'">
+                <img id="modalMainImage" src="${images[0]}" alt="${product.name}" class="modal-product-image" onerror="this.style.display='none'">
             </div>
             <div class="modal-image-thumbs">
                 ${images.map((img, index) => `
                     <button class="modal-thumb ${index === 0 ? 'active' : ''}" onclick="changeModalImage('${img}', this)">
-                        <img src="${img}" alt="${product.name} thumbnail ${index + 1}" onerror="this.src='${FALLBACK_IMAGE}'">
+                        <img src="${img}" alt="${product.name} thumbnail ${index + 1}" onerror="this.style.display='none'">
                     </button>
                 `).join('')}
             </div>
@@ -213,7 +216,7 @@ function addToCartFromModal(productId) {
         return;
     }
 
-    cartManager.addToCart(productId, qty);
+    cartManager.addToCart(productId, qty, selectedSize);
     // Optionally close modal or show success message
 }
 
@@ -262,20 +265,37 @@ function toggleAccordion(element) {
     }
 }
 
-// Initialize suggested products in modal
+// Initialize suggested products in modal (same category)
 function initModalSuggestedProducts(currentProductId) {
     const container = document.getElementById('modalSuggestedProducts');
     if (!container) return;
     
-    // Get 4 random products excluding current product
-    const otherProducts = products.filter(p => p.id !== currentProductId);
-    const shuffled = [...otherProducts].sort(() => 0.5 - Math.random());
-    const suggested = shuffled.slice(0, 4);
+    // Find current product to get its category
+    const currentProduct = products.find(p => p.id === currentProductId);
+    if (!currentProduct) return;
+    
+    // Get products from same category, excluding current product
+    const sameCategoryProducts = products.filter(
+        p => p.id !== currentProductId && p.category === currentProduct.category
+    );
+    
+    // If not enough products in same category, fill with other products
+    let suggested = [...sameCategoryProducts];
+    if (suggested.length < 4) {
+        const otherProducts = products.filter(
+            p => p.id !== currentProductId && p.category !== currentProduct.category
+        );
+        const shuffled = [...otherProducts].sort(() => 0.5 - Math.random());
+        suggested = [...suggested, ...shuffled].slice(0, 4);
+    } else {
+        // Randomize same category products and take 4
+        suggested = [...suggested].sort(() => 0.5 - Math.random()).slice(0, 4);
+    }
     
     container.innerHTML = suggested.map(product => `
         <div class="modal-suggested-card" onclick="showProductModal(${product.id})">
             <div class="modal-suggested-image">
-                <img src="${product.image}" alt="${product.name}" onerror="this.src='${FALLBACK_IMAGE}'">
+                <img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'">
             </div>
             <div class="modal-suggested-info">
                 <div class="modal-suggested-category">${product.category}</div>

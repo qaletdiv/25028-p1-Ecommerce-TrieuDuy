@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Commerce Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
@@ -11,9 +12,40 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">Ecommerce</div>
+                <div class="logo-section">
+                    <a href="#" class="logo" onclick="showHomePage(event)">
+                        <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="logo-text">ShopStyle</span>
+                    </a>
+                    <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Dark mode" title="Chuyển đổi chế độ tối/sáng">
+                        <svg id="sunIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg id="moonIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
                 
-                <nav class="nav">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <nav class="nav" id="mainNav">
                     <a href="#" class="nav-link active" onclick="showHomePage(event)">Trang chủ</a>
                     <a href="#products" class="nav-link" onclick="showProductsPage(event)">Sản phẩm</a>
                     <a href="#support" class="nav-link" onclick="showSupportPage(event)">Liên hệ</a>
@@ -21,26 +53,36 @@
                 
                 <div class="search-bar">
                     <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
+                    <button class="search-btn" id="searchBtn" aria-label="Tìm kiếm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <div class="search-history-dropdown" id="searchHistoryDropdown"></div>
                 </div>
                 
                 <div class="header-actions">
-                    <button class="btn-icon" id="favoritesBtn">
-                        Yêu thích (<span id="favoritesCount">0</span>)
+                    <button class="btn-icon favorites-icon-btn" id="favoritesBtn" title="Yêu thích">
+                        <i class="fa-solid fa-heart"></i>
+                        <span class="favorites-count-badge" id="favoritesCount">0</span>
                     </button>
-                    <button class="btn-icon" id="cartBtn">
-                        Giỏ hàng (<span id="cartCount">0</span>)
+                    <button class="btn-icon cart-icon-btn" id="cartBtn" title="Giỏ hàng">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-count-badge" id="cartCount">0</span>
                     </button>
                     <!-- Khi chưa đăng nhập: hiển thị Đăng nhập / Đăng ký -->
                     <button class="btn-primary" id="loginBtn">Đăng nhập</button>
                     <button class="btn-secondary" id="registerBtn">Đăng ký</button>
                     <!-- Dropdown tài khoản khi đã đăng nhập -->
                     <div class="user-dropdown" id="userDropdown" style="display: none;">
-                        <button class="user-dropdown-toggle" id="userDropdownToggle">
-                            <span class="user-icon">👤</span>
-                            <span id="userDropdownName">Tài khoản</span>
-                            <span class="user-caret">▾</span>
+                        <button class="user-dropdown-toggle" id="userDropdownToggle" title="Tài khoản">
+                            <i class="fa-solid fa-user user-icon"></i>
                         </button>
                         <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <div class="dropdown-header">
+                                <span class="user-menu-name" id="userMenuName">Tài khoản</span>
+                            </div>
                             <button class="dropdown-item" onclick="showAccountPage(event)">Hồ sơ / Đơn hàng</button>
                             <button class="dropdown-item" onclick="goToCheckout()">Thanh toán</button>
                             <button class="dropdown-item" onclick="logout()">Đăng xuất</button>
@@ -317,26 +359,293 @@
                 <div class="support-block">
                     <h3>Chủ đề hỗ trợ</h3>
                     <div class="help-topics">
-                        <div class="help-topic-card">
+                        <div class="help-topic-card" onclick="showHelpTopic('ordering')">
                             <div class="help-topic-icon">🛒</div>
                             <h4>Đặt hàng & Thanh toán</h4>
                             <p>Hướng dẫn đặt hàng và các phương thức thanh toán</p>
                         </div>
-                        <div class="help-topic-card">
+                        <div class="help-topic-card" onclick="showHelpTopic('shipping')">
                             <div class="help-topic-icon">🚚</div>
                             <h4>Vận chuyển</h4>
                             <p>Thông tin về phí vận chuyển và thời gian giao hàng</p>
                         </div>
-                        <div class="help-topic-card">
+                        <div class="help-topic-card" onclick="showHelpTopic('returns')">
                             <div class="help-topic-icon">↩️</div>
                             <h4>Đổi trả</h4>
                             <p>Chính sách đổi trả và hoàn tiền</p>
                         </div>
-                        <div class="help-topic-card">
+                        <div class="help-topic-card" onclick="showHelpTopic('account')">
                             <div class="help-topic-icon">💳</div>
                             <h4>Tài khoản</h4>
                             <p>Quản lý tài khoản và thông tin cá nhân</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Help Topic Detail Pages -->
+    <!-- Ordering & Payment -->
+    <section id="helpOrdering" class="help-topic-page" style="display: none;">
+        <div class="container">
+            <button class="help-back-btn" onclick="showHelpTopics()">← Quay lại</button>
+            <div class="help-topic-content">
+                <div class="help-topic-header">
+                    <div class="help-topic-header-icon">🛒</div>
+                    <h2>Đặt hàng & Thanh toán</h2>
+                </div>
+                
+                <div class="help-topic-section">
+                    <h3>Cách đặt hàng</h3>
+                    <ol class="help-step-list">
+                        <li><strong>Tìm kiếm sản phẩm:</strong> Sử dụng thanh tìm kiếm hoặc duyệt qua các danh mục sản phẩm</li>
+                        <li><strong>Xem chi tiết:</strong> Click vào sản phẩm để xem thông tin chi tiết, hình ảnh và mô tả</li>
+                        <li><strong>Chọn size và số lượng:</strong> Chọn size phù hợp và số lượng bạn muốn mua</li>
+                        <li><strong>Thêm vào giỏ hàng:</strong> Nhấn nút "Thêm vào giỏ" để thêm sản phẩm vào giỏ hàng</li>
+                        <li><strong>Kiểm tra giỏ hàng:</strong> Click vào biểu tượng "Giỏ hàng" ở header để xem các sản phẩm đã chọn</li>
+                        <li><strong>Thanh toán:</strong> Nhấn nút "Thanh toán" và điền đầy đủ thông tin giao hàng</li>
+                        <li><strong>Xác nhận đơn hàng:</strong> Kiểm tra lại thông tin và nhấn "Xác nhận đơn hàng"</li>
+                    </ol>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Phương thức thanh toán</h3>
+                    <div class="help-payment-methods">
+                        <div class="payment-method-card">
+                            <div class="payment-icon">💵</div>
+                            <h4>Thanh toán khi nhận hàng (COD)</h4>
+                            <p>Thanh toán bằng tiền mặt khi nhận được hàng. Phí thu hộ: 20.000₫</p>
+                        </div>
+                        <div class="payment-method-card">
+                            <div class="payment-icon">🏦</div>
+                            <h4>Chuyển khoản ngân hàng</h4>
+                            <p>Chuyển khoản trực tiếp đến tài khoản ngân hàng. Thông tin tài khoản sẽ được gửi qua email sau khi đặt hàng.</p>
+                        </div>
+                        <div class="payment-method-card">
+                            <div class="payment-icon">💳</div>
+                            <h4>Thẻ tín dụng / Ghi nợ</h4>
+                            <p>Thanh toán bằng thẻ Visa, Mastercard hoặc các loại thẻ ngân hàng khác qua cổng thanh toán an toàn.</p>
+                        </div>
+                        <div class="payment-method-card">
+                            <div class="payment-icon">📱</div>
+                            <h4>Ví điện tử</h4>
+                            <p>Thanh toán qua MoMo, ZaloPay, VNPay và các ví điện tử khác.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Lưu ý khi đặt hàng</h3>
+                    <ul class="help-note-list">
+                        <li>Bạn cần đăng nhập để có thể đặt hàng và theo dõi đơn hàng</li>
+                        <li>Vui lòng kiểm tra kỹ thông tin địa chỉ giao hàng trước khi xác nhận</li>
+                        <li>Đơn hàng sẽ được xử lý trong vòng 24 giờ kể từ khi đặt</li>
+                        <li>Bạn sẽ nhận được email xác nhận đơn hàng sau khi đặt thành công</li>
+                        <li>Mọi thắc mắc về đơn hàng, vui lòng liên hệ hotline: 1900 1234</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shipping -->
+    <section id="helpShipping" class="help-topic-page" style="display: none;">
+        <div class="container">
+            <button class="help-back-btn" onclick="showHelpTopics()">← Quay lại</button>
+            <div class="help-topic-content">
+                <div class="help-topic-header">
+                    <div class="help-topic-header-icon">🚚</div>
+                    <h2>Vận chuyển</h2>
+                </div>
+                
+                <div class="help-topic-section">
+                    <h3>Phí vận chuyển</h3>
+                    <div class="help-shipping-fees">
+                        <div class="shipping-fee-item">
+                            <div class="fee-badge free">Miễn phí</div>
+                            <div class="fee-detail">
+                                <h4>Đơn hàng từ 500.000₫</h4>
+                                <p>Miễn phí vận chuyển toàn quốc cho các đơn hàng có giá trị từ 500.000₫ trở lên</p>
+                            </div>
+                        </div>
+                        <div class="shipping-fee-item">
+                            <div class="fee-badge">30.000₫</div>
+                            <div class="fee-detail">
+                                <h4>Nội thành TP.HCM & Hà Nội</h4>
+                                <p>Phí vận chuyển 30.000₫ cho các đơn hàng dưới 500.000₫ trong nội thành</p>
+                            </div>
+                        </div>
+                        <div class="shipping-fee-item">
+                            <div class="fee-badge">50.000₫</div>
+                            <div class="fee-detail">
+                                <h4>Các tỉnh thành khác</h4>
+                                <p>Phí vận chuyển 50.000₫ cho các đơn hàng dưới 500.000₫ đến các tỉnh thành khác</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Thời gian giao hàng</h3>
+                    <div class="help-shipping-time">
+                        <div class="shipping-time-card">
+                            <h4>🏙️ Nội thành TP.HCM & Hà Nội</h4>
+                            <span class="time-highlight">1 - 2 ngày làm việc</span>
+                            <p>Đơn hàng sẽ được giao trong vòng 1-2 ngày làm việc (không tính thứ 7, chủ nhật và ngày lễ)</p>
+                        </div>
+                        <div class="shipping-time-card">
+                            <h4>📍 Các tỉnh thành khác</h4>
+                            <span class="time-highlight">3 - 7 ngày làm việc</span>
+                            <p>Tùy thuộc vào khoảng cách, đơn hàng sẽ được giao trong vòng 3-7 ngày làm việc</p>
+                        </div>
+                        <div class="shipping-time-card">
+                            <h4>🏝️ Vùng sâu, vùng xa</h4>
+                            <span class="time-highlight">7 - 10 ngày làm việc</span>
+                            <p>Đối với các khu vực vùng sâu, vùng xa, thời gian giao hàng có thể kéo dài đến 10 ngày</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Theo dõi đơn hàng</h3>
+                    <ol class="help-step-list">
+                        <li>Sau khi đặt hàng thành công, bạn sẽ nhận được email xác nhận kèm mã đơn hàng</li>
+                        <li>Đăng nhập vào tài khoản và vào mục "Tài khoản của tôi"</li>
+                        <li>Xem danh sách đơn hàng trong phần "Lịch sử đơn hàng"</li>
+                        <li>Theo dõi trạng thái đơn hàng: Đang xử lý → Đang vận chuyển → Đã giao hàng</li>
+                        <li>Hoặc liên hệ hotline 1900 1234 với mã đơn hàng để được hỗ trợ</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Returns & Exchanges -->
+    <section id="helpReturns" class="help-topic-page" style="display: none;">
+        <div class="container">
+            <button class="help-back-btn" onclick="showHelpTopics()">← Quay lại</button>
+            <div class="help-topic-content">
+                <div class="help-topic-header">
+                    <div class="help-topic-header-icon">↩️</div>
+                    <h2>Đổi trả</h2>
+                </div>
+                
+                <div class="help-topic-section">
+                    <h3>Điều kiện đổi trả</h3>
+                    <div class="help-conditions">
+                        <div class="condition-card valid">
+                            <h4>✓ Các trường hợp được đổi trả</h4>
+                            <ul>
+                                <li>Sản phẩm bị lỗi do nhà sản xuất</li>
+                                <li>Sản phẩm không đúng với đơn hàng</li>
+                                <li>Sản phẩm bị hỏng trong quá trình vận chuyển</li>
+                                <li>Sản phẩm còn nguyên vẹn, chưa sử dụng, còn tem mác</li>
+                                <li>Trong vòng 7 ngày kể từ ngày nhận hàng</li>
+                            </ul>
+                        </div>
+                        <div class="condition-card invalid">
+                            <h4>✗ Các trường hợp không được đổi trả</h4>
+                            <ul>
+                                <li>Sản phẩm đã qua sử dụng, có dấu hiệu mặc thử</li>
+                                <li>Thiếu phụ kiện, tem mác đi kèm</li>
+                                <li>Quá thời hạn 7 ngày kể từ ngày nhận hàng</li>
+                                <li>Sản phẩm bị hư hỏng do lỗi của khách hàng</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Quy trình đổi trả</h3>
+                    <ol class="help-step-list">
+                        <li><strong>Liên hệ hỗ trợ:</strong> Gọi hotline 1900 1234 hoặc gửi email đến support@ecommerce.com với mã đơn hàng</li>
+                        <li><strong>Xác nhận yêu cầu:</strong> Nhân viên sẽ kiểm tra và xác nhận yêu cầu đổi trả của bạn</li>
+                        <li><strong>Chuẩn bị hàng:</strong> Đóng gói sản phẩm nguyên trạng (bao gồm hộp, tem mác, phụ kiện)</li>
+                        <li><strong>Gửi hàng về:</strong> Gửi hàng về địa chỉ được cung cấp hoặc nhờ đơn vị vận chuyển đến lấy</li>
+                        <li><strong>Kiểm tra và xử lý:</strong> Chúng tôi sẽ kiểm tra sản phẩm trong vòng 3-5 ngày</li>
+                        <li><strong>Hoàn tiền / Đổi hàng:</strong> Sau khi xác nhận, chúng tôi sẽ hoàn tiền hoặc gửi sản phẩm thay thế</li>
+                    </ol>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Chính sách hoàn tiền</h3>
+                    <div class="help-refund-policy">
+                        <div class="refund-method">
+                            <h4>💰 Hoàn tiền</h4>
+                            <ul>
+                                <li>Thời gian xử lý: 3-5 ngày làm việc sau khi nhận được hàng</li>
+                                <li>Phương thức hoàn tiền: Theo phương thức thanh toán ban đầu</li>
+                                <li>Phí vận chuyển: Khách hàng chịu phí vận chuyển đổi trả (nếu không phải lỗi từ phía chúng tôi)</li>
+                            </ul>
+                        </div>
+                        <div class="refund-method">
+                            <h4>🔄 Đổi hàng</h4>
+                            <ul>
+                                <li>Có thể đổi sang sản phẩm khác (nếu chênh lệch giá sẽ được tính toán)</li>
+                                <li>Đổi sang size khác (nếu còn hàng)</li>
+                                <li>Miễn phí vận chuyển khi đổi hàng</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Account -->
+    <section id="helpAccount" class="help-topic-page" style="display: none;">
+        <div class="container">
+            <button class="help-back-btn" onclick="showHelpTopics()">← Quay lại</button>
+            <div class="help-topic-content">
+                <div class="help-topic-header">
+                    <div class="help-topic-header-icon">💳</div>
+                    <h2>Tài khoản</h2>
+                </div>
+                
+                <div class="help-topic-section">
+                    <h3>Tạo tài khoản</h3>
+                    <ol class="help-step-list">
+                        <li>Click vào nút "Đăng ký" ở header</li>
+                        <li>Điền đầy đủ thông tin: Họ và tên, Email, Mật khẩu</li>
+                        <li>Nhập lại mật khẩu để xác nhận</li>
+                        <li>Nhấn "Đăng ký" để hoàn tất</li>
+                        <li>Sau khi đăng ký, bạn sẽ tự động chuyển sang form đăng nhập</li>
+                    </ol>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Quản lý tài khoản</h3>
+                    <div class="help-account-features">
+                        <div class="account-feature-card">
+                            <h4>👤 Thông tin cá nhân</h4>
+                            <p>Xem và cập nhật thông tin cá nhân: Họ tên, Email trong phần "Tài khoản của tôi"</p>
+                        </div>
+                        <div class="account-feature-card">
+                            <h4>📦 Lịch sử đơn hàng</h4>
+                            <p>Xem tất cả các đơn hàng đã đặt, mã đơn hàng, ngày đặt, tổng tiền và trạng thái</p>
+                        </div>
+                        <div class="account-feature-card">
+                            <h4>❌ Hủy đơn hàng</h4>
+                            <p>Hủy các đơn hàng đang trong trạng thái "Đang xử lý" với lý do cụ thể</p>
+                        </div>
+                        <div class="account-feature-card">
+                            <h4>🛒 Giỏ hàng</h4>
+                            <p>Lưu trữ sản phẩm yêu thích, quản lý số lượng và size trước khi thanh toán</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-topic-section">
+                    <h3>Bảo mật tài khoản</h3>
+                    <div class="help-security-tips">
+                        <h4>🔒 Mẹo bảo mật tài khoản:</h4>
+                        <ul class="help-note-list">
+                            <li>Sử dụng mật khẩu mạnh (ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt)</li>
+                            <li>Không chia sẻ thông tin đăng nhập với người khác</li>
+                            <li>Đăng xuất sau khi sử dụng xong, đặc biệt khi dùng máy tính công cộng</li>
+                            <li>Nếu quên mật khẩu, liên hệ hỗ trợ để được hỗ trợ đặt lại</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -392,49 +701,126 @@
     <div id="authModal" class="modal">
         <div class="modal-content auth-modal-content">
             <span class="close">&times;</span>
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                    <h1 class="auth-title">ShopStyle</h1>
+                </div>
+            </div>
             <div class="auth-tabs">
-                <button class="auth-tab active" data-tab="login">Đăng nhập</button>
-                <button class="auth-tab" data-tab="register">Đăng ký</button>
+                <button class="auth-tab active" data-tab="login">
+                    <i class="fa-solid fa-sign-in-alt"></i>
+                    <span>Đăng nhập</span>
+                </button>
+                <button class="auth-tab" data-tab="register">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Đăng ký</span>
+                </button>
             </div>
             
             <!-- Login Form -->
             <div id="loginForm" class="auth-form active">
-                <h2>Đăng nhập</h2>
                 <form id="loginFormElement" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="loginEmail" required />
+                        <label for="loginEmail">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>Email</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="email" id="loginEmail" placeholder="Nhập email của bạn" required />
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                        </div>
+                        <span class="error-message" id="loginEmailError"></span>
                     </div>
                     <div class="form-group">
-                        <label>Mật khẩu</label>
-                        <input type="password" id="loginPassword" required />
+                        <label for="loginPassword">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Mật khẩu</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required />
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <button type="button" class="toggle-password" id="toggleLoginPassword" aria-label="Hiện/ẩn mật khẩu">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="loginPasswordError"></span>
                     </div>
-                    <button type="submit" class="btn-primary btn-large" style="width: 100%;">Đăng nhập</button>
+                    <button type="submit" class="btn-primary btn-large btn-auth-submit">
+                        <span>Đăng nhập</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
                 </form>
             </div>
             
             <!-- Register Form -->
             <div id="registerForm" class="auth-form">
-                <h2>Đăng ký</h2>
                 <form id="registerFormElement" onsubmit="handleRegister(event)">
                     <div class="form-group">
-                        <label>Họ và tên</label>
-                        <input type="text" id="registerName" required />
+                        <label for="registerName">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Họ và tên</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" id="registerName" placeholder="Nhập họ và tên" required />
+                            <i class="fa-solid fa-user input-icon"></i>
+                        </div>
+                        <span class="error-message" id="registerNameError"></span>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="registerEmail" required />
+                        <label for="registerEmail">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>Email</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="email" id="registerEmail" placeholder="Nhập email của bạn" required />
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                        </div>
+                        <span class="error-message" id="registerEmailError"></span>
                     </div>
                     <div class="form-group">
-                        <label>Mật khẩu</label>
-                        <input type="password" id="registerPassword" required />
+                        <label for="registerPassword">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Mật khẩu</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" id="registerPassword" placeholder="Nhập mật khẩu" required />
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <button type="button" class="toggle-password" id="toggleRegisterPassword" aria-label="Hiện/ẩn mật khẩu">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="registerPasswordError"></span>
                     </div>
                     <div class="form-group">
-                        <label>Nhập lại mật khẩu</label>
-                        <input type="password" id="registerConfirmPassword" required />
+                        <label for="registerConfirmPassword">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Nhập lại mật khẩu</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" id="registerConfirmPassword" placeholder="Nhập lại mật khẩu để xác nhận" required />
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <button type="button" class="toggle-password" id="toggleRegisterConfirmPassword" aria-label="Hiện/ẩn mật khẩu">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="registerConfirmPasswordError"></span>
                     </div>
-                    <button type="submit" class="btn-primary btn-large" style="width: 100%;">Đăng ký</button>
+                    <button type="submit" class="btn-primary btn-large btn-auth-submit">
+                        <span>Đăng ký</span>
+                        <i class="fa-solid fa-user-plus"></i>
+                    </button>
                 </form>
+            </div>
+            
+            <!-- Success Message -->
+            <div class="auth-success-message" id="authSuccessMessage" style="display: none;">
+                <i class="fa-solid fa-check-circle"></i>
+                <span id="authSuccessText"></span>
             </div>
         </div>
     </div>
@@ -450,18 +836,39 @@
             <div class="checkout-layout">
                 <div class="checkout-form-block">
                     <h3>Thông tin giao hàng</h3>
+                    
+                    <!-- Saved Addresses List -->
+                    <div id="savedAddressesList" class="saved-addresses-list">
+                        <!-- Saved addresses will be rendered here -->
+                    </div>
+                    
+                    <!-- Toggle button -->
+                    <div class="address-toggle-wrapper">
+                        <button type="button" class="btn-link" id="toggleNewAddressBtn" onclick="toggleNewAddressForm()">+ Thêm địa chỉ mới</button>
+                    </div>
+                    
+                    <!-- New Address Form -->
                     <form id="checkoutForm" onsubmit="submitCheckout(event)">
-                        <div class="form-group">
-                            <label>Họ và tên</label>
-                            <input type="text" id="shippingName" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Số điện thoại</label>
-                            <input type="tel" id="shippingPhone" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Địa chỉ giao hàng</label>
-                            <textarea id="shippingAddress" rows="3" required></textarea>
+                        <div id="newAddressForm" style="display: none;">
+                            <div class="form-group">
+                                <label>Họ và tên</label>
+                                <input type="text" id="shippingName" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Số điện thoại</label>
+                                <input type="tel" id="shippingPhone" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ giao hàng</label>
+                                <textarea id="shippingAddress" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="saveAddressCheckbox" />
+                                    <span>Lưu địa chỉ này cho lần sau</span>
+                                </label>
+                            </div>
+                            <button type="button" class="btn-secondary" onclick="saveCurrentAddressAsNew()">Lưu địa chỉ</button>
                         </div>
                         <button type="submit" class="btn-primary btn-large">Xác nhận đơn hàng</button>
                     </form>
@@ -545,27 +952,27 @@
                 <div class="form-group">
                     <label>
                         <input type="radio" name="cancelReason" value="Đổi ý, không muốn mua nữa" checked>
-                        Đổi ý, không muốn mua nữa
+                        <span>Đổi ý, không muốn mua nữa</span>
                     </label>
                 </div>
                 <div class="form-group">
                     <label>
                         <input type="radio" name="cancelReason" value="Đặt nhầm sản phẩm / size">
-                        Đặt nhầm sản phẩm / size
+                        <span>Đặt nhầm sản phẩm / size</span>
                     </label>
                 </div>
                 <div class="form-group">
                     <label>
                         <input type="radio" name="cancelReason" value="Tìm được nơi khác giá tốt hơn">
-                        Tìm được nơi khác giá tốt hơn
+                        <span>Tìm được nơi khác giá tốt hơn</span>
                     </label>
                 </div>
                 <div class="form-group">
-                    <label>
+                    <label class="has-textarea">
                         <input type="radio" name="cancelReason" value="Lý do khác" id="cancelReasonOtherRadio">
-                        Lý do khác
+                        <span>Lý do khác</span>
                     </label>
-                    <textarea id="cancelReasonOtherText" rows="3" placeholder="Nhập lý do của bạn..."></textarea>
+                    <textarea id="cancelReasonOtherText" rows="4" placeholder="Nhập lý do của bạn..."></textarea>
                 </div>
 
                 <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
@@ -616,7 +1023,11 @@
     </footer>
 
     <!-- Scripts -->
-    <!-- Data -->
+    <!-- Mock Data (dữ liệu gốc không bao giờ thay đổi) -->
+    <script src="js/mock-data.js"></script>
+    <!-- Data Initialization (khởi tạo dữ liệu từ mock-data vào localStorage) -->
+    <script src="js/init-data.js"></script>
+    <!-- Products Data (đọc từ localStorage) -->
     <script src="js/products-data.js"></script>
     <!-- Utils -->
     <script src="js/utils.js"></script>
@@ -634,6 +1045,14 @@
     <!-- Navigation & Orders -->
     <script src="js/navigation.js"></script>
     <script src="js/orders.js"></script>
+    <!-- Shipping Addresses -->
+    <script src="js/shipping-addresses.js"></script>
+    <!-- Dark Mode -->
+    <script src="js/dark-mode.js"></script>
+    <!-- Search History -->
+    <script src="js/search-history.js"></script>
+    <!-- Help Topics -->
+    <script src="js/help-topics.js"></script>
     <!-- Auth -->
     <script src="js/auth.js"></script>
     <!-- Main -->
