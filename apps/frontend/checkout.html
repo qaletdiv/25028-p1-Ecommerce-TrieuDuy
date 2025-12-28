@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - E-Commerce Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <a href="index.html" class="logo">
+                        <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="logo-text">ShopStyle</span>
+                    </a>
+                    <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Dark mode" title="Chuyển đổi chế độ tối/sáng">
+                        <svg id="sunIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg id="moonIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <nav class="nav" id="mainNav">
+                    <a href="index.html" class="nav-link">Trang chủ</a>
+                    <a href="products.html" class="nav-link">Sản phẩm</a>
+                    <a href="support.html" class="nav-link">Liên hệ</a>
+                </nav>
+                
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
+                    <button class="search-btn" id="searchBtn" aria-label="Tìm kiếm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <div class="search-history-dropdown" id="searchHistoryDropdown"></div>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn-icon favorites-icon-btn" id="favoritesBtn" title="Yêu thích">
+                        <i class="fa-solid fa-heart"></i>
+                        <span class="favorites-count-badge" id="favoritesCount">0</span>
+                    </button>
+                    <button class="btn-icon cart-icon-btn" id="cartBtn" title="Giỏ hàng">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-count-badge" id="cartCount">0</span>
+                    </button>
+                    <button class="btn-primary" id="loginBtn">Đăng nhập</button>
+                    <button class="btn-secondary" id="registerBtn">Đăng ký</button>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <button class="user-dropdown-toggle" id="userDropdownToggle" title="Tài khoản">
+                            <i class="fa-solid fa-user user-icon"></i>
+                        </button>
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+                            <div class="dropdown-header">
+                                <span class="user-menu-name" id="userMenuName">Tài khoản</span>
+                            </div>
+                            <a href="account.html" class="dropdown-item">Hồ sơ / Đơn hàng</a>
+                            <a href="checkout.html" class="dropdown-item">Thanh toán</a>
+                            <button class="dropdown-item" onclick="logout()">Đăng xuất</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Checkout Page -->
+    <section id="checkout" class="checkout-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Thanh toán</h2>
+                <p class="section-subtitle">Nhập thông tin giao hàng và xác nhận đơn hàng</p>
+            </div>
+
+            <div class="checkout-layout">
+                <div class="checkout-form-block">
+                    <h3>Thông tin giao hàng</h3>
+                    
+                    <!-- Saved Addresses List -->
+                    <div id="savedAddressesList" class="saved-addresses-list">
+                        <!-- Saved addresses will be rendered here -->
+                    </div>
+                    
+                    <!-- Toggle button -->
+                    <div class="address-toggle-wrapper">
+                        <button type="button" class="btn-link" id="toggleNewAddressBtn" onclick="toggleNewAddressForm()">+ Thêm địa chỉ mới</button>
+                    </div>
+                    
+                    <!-- New Address Form -->
+                    <form id="checkoutForm" onsubmit="submitCheckout(event)">
+                        <div id="newAddressForm" style="display: none;">
+                            <div class="form-group">
+                                <label>Họ và tên</label>
+                                <input type="text" id="shippingName" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Số điện thoại</label>
+                                <input type="tel" id="shippingPhone" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ giao hàng</label>
+                                <textarea id="shippingAddress" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="saveAddressCheckbox" />
+                                    <span>Lưu địa chỉ này cho lần sau</span>
+                                </label>
+                            </div>
+                            <button type="button" class="btn-secondary" onclick="saveCurrentAddressAsNew()">Lưu địa chỉ</button>
+                        </div>
+                        <button type="submit" class="btn-primary btn-large">Xác nhận đơn hàng</button>
+                    </form>
+                </div>
+
+                <div class="checkout-summary-block">
+                    <h3>Tóm tắt đơn hàng</h3>
+                    <div id="checkoutSummaryItems" class="checkout-summary-items">
+                        <!-- Items sẽ được render bằng JavaScript -->
+                    </div>
+                    <div class="checkout-summary-total">
+                        <span>Tổng tiền:</span>
+                        <strong id="checkoutSummaryTotal">0₫</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Confirmation Page -->
+    <section id="orderConfirmation" class="order-confirmation-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Đặt hàng thành công</h2>
+                <p class="section-subtitle">Cảm ơn bạn đã mua sắm tại Ecommerce</p>
+            </div>
+
+            <div class="order-confirmation-content">
+                <p class="order-confirmation-message">
+                    Đơn hàng của bạn đã được ghi nhận. Chúng tôi sẽ liên hệ và giao hàng trong thời gian sớm nhất.
+                </p>
+
+                <div id="orderConfirmationSummary" class="order-confirmation-summary">
+                    <!-- Tóm tắt đơn hàng sẽ được render bằng JavaScript -->
+                </div>
+
+                <div class="order-confirmation-actions">
+                    <button class="btn-primary" onclick="showHomePage(event)">Tiếp tục mua sắm</button>
+                    <button class="btn-secondary" onclick="showAccountPage(event)">Xem lịch sử đơn hàng</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <span class="close">&times;</span>
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                    <h1 class="auth-title">ShopStyle</h1>
+                </div>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">
+                    <i class="fa-solid fa-sign-in-alt"></i>
+                    <span>Đăng nhập</span>
+                </button>
+                <button class="auth-tab" data-tab="register">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Đăng ký</span>
+                </button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <form id="loginFormElement" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>Email</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="email" id="loginEmail" placeholder="Nhập email của bạn" required />
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                        </div>
+                        <span class="error-message" id="loginEmailError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Mật khẩu</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required />
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <button type="button" class="toggle-password" id="toggleLoginPassword" aria-label="Hiện/ẩn mật khẩu">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="loginPasswordError"></span>
+                    </div>
+                    <button type="submit" class="btn-primary btn-large btn-auth-submit">
+                        <span>Đăng nhập</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form">
+                <form id="registerFormElement" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="registerName">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Họ và tên</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" id="registerName" placeholder="Nhập họ và tên" required />
+                            <i class="fa-solid fa-user input-icon"></i>
+                        </div>
+                        <span class="error-message" id="registerNameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>Email</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="email" id="registerEmail" placeholder="Nhập email của bạn" required />
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                        </div>
+                        <span class="error-message" id="registerEmailError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Mật khẩu</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" id="registerPassword" placeholder="Nhập mật khẩu" required />
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <button type="button" class="toggle-password" id="toggleRegisterPassword" aria-label="Hiện/ẩn mật khẩu">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="registerPasswordError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Nhập lại mật khẩu</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" id="registerConfirmPassword" placeholder="Nhập lại mật khẩu để xác nhận" required />
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <button type="button" class="toggle-password" id="toggleRegisterConfirmPassword" aria-label="Hiện/ẩn mật khẩu">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-message" id="registerConfirmPasswordError"></span>
+                    </div>
+                    <button type="submit" class="btn-primary btn-large btn-auth-submit">
+                        <span>Đăng ký</span>
+                        <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Success Message -->
+            <div class="auth-success-message" id="authSuccessMessage" style="display: none;">
+                <i class="fa-solid fa-check-circle"></i>
+                <span id="authSuccessText"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Về chúng tôi</h3>
+                    <p>Ecommerce - Cửa hàng thời trang thể thao hàng đầu Việt Nam</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên kết nhanh</h3>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="products.html">Sản phẩm</a></li>
+                        <li><a href="support.html">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Hỗ trợ</h3>
+                    <ul>
+                        <li><a href="support.html">Câu hỏi thường gặp</a></li>
+                        <li><a href="support.html">Chính sách đổi trả</a></li>
+                        <li><a href="support.html">Vận chuyển</a></li>
+                        <li><a href="support.html">Thanh toán</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <p>Email: support@ecommerce.com</p>
+                    <p>Hotline: 1900 1234</p>
+                    <p>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ecommerce. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/mock-data.js"></script>
+    <script src="js/init-data.js"></script>
+    <script src="js/products-data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/favorites.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/orders.js"></script>
+    <script src="js/shipping-addresses.js"></script>
+    <script src="js/dark-mode.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
