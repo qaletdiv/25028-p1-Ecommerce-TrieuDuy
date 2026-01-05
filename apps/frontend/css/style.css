@@ -2343,19 +2343,15 @@ body {
 }
 
 .error-message {
-    display: block;
+    display: none;
     color: #e74c3c;
     font-size: 0.875rem;
     margin-top: 0.5rem;
     min-height: 1.25rem;
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
 }
 
-.error-message.show {
-    opacity: 1;
-    transform: translateY(0);
+.error-message:not(:empty) {
+    display: block;
 }
 
 .error-message::before {
@@ -2566,6 +2562,37 @@ body {
 
 .auth-success-message span {
     font-weight: 500;
+}
+
+/* Generic success message (for checkout and other forms) */
+.success-message {
+    margin: 0.75rem 0 1rem;
+    padding: 0.875rem 1.25rem;
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: white;
+    border-radius: 8px;
+    display: none;
+    align-items: center;
+    gap: 0.625rem;
+    animation: slideDownSuccess 0.4s ease-out;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    font-size: 0.9rem;
+}
+
+.success-message:not(:empty) {
+    display: flex;
+}
+
+.success-message i {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.success-message::before {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 0.5rem;
 }
 
 /* Responsive */
@@ -4736,6 +4763,11 @@ body {
 
 .dark-mode .error-message {
     color: #ff6b6b;
+}
+
+.dark-mode .success-message {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
 }
 
 .dark-mode .auth-title {
