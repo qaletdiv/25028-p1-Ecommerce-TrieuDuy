@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof renderSavedAddresses === 'function') {
             renderSavedAddresses();
         }
-        
-        // Check if there's a pending order confirmation
+    } else if (currentPage === 'order-confirmation.html') {
+        // Order confirmation page - show order details
         const lastOrder = sessionStorage.getItem('lastOrder');
         if (lastOrder) {
             try {
@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (e) {
                 console.error('Error parsing last order:', e);
             }
+        } else {
+            // If no order data, redirect to home
+            window.location.href = 'index.html';
         }
     } else if (currentPage === 'account.html') {
         // Account page - render account page

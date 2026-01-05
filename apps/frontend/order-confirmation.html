@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toán - E-Commerce Store</title>
+    <title>Xác nhận đơn hàng - E-Commerce Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/style.css">
   </head>
@@ -47,43 +47,34 @@
                 
                 <nav class="nav" id="mainNav">
                     <a href="index.html" class="nav-link">Trang chủ</a>
-                    <a href="products.html" class="nav-link active">Sản phẩm</a>
+                    <a href="products.html" class="nav-link">Sản phẩm</a>
                     <a href="support.html" class="nav-link">Liên hệ</a>
                 </nav>
                 
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
-                    <button class="search-btn" id="searchBtn" aria-label="Tìm kiếm">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                    </button>
-                    <div class="search-history-dropdown" id="searchHistoryDropdown"></div>
-                </div>
-                
                 <div class="header-actions">
-                    <button class="btn-icon favorites-icon-btn" id="favoritesBtn" title="Yêu thích">
-                        <i class="fa-solid fa-heart"></i>
-                        <span class="favorites-count-badge" id="favoritesCount">0</span>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." />
+                        <button id="searchBtn" onclick="performSearch()"><i class="fas fa-search"></i></button>
+                        <div id="searchHistoryDropdown" class="search-history-dropdown"></div>
+                    </div>
+                    <button class="icon-btn" id="favoritesBtn" onclick="openModal('favoritesModal')" aria-label="Yêu thích">
+                        <i class="fas fa-heart"></i>
+                        <span class="icon-badge" id="favoritesBadge">0</span>
                     </button>
-                    <button class="btn-icon cart-icon-btn" id="cartBtn" title="Giỏ hàng">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span class="cart-count-badge" id="cartCount">0</span>
+                    <button class="icon-btn" id="cartBtn" onclick="openModal('cartModal')" aria-label="Giỏ hàng">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="icon-badge" id="cartBadge">0</span>
                     </button>
-                    <button class="btn-primary" id="loginBtn">Đăng nhập</button>
-                    <button class="btn-secondary" id="registerBtn">Đăng ký</button>
-                    <div class="user-dropdown" id="userDropdown" style="display: none;">
-                        <button class="user-dropdown-toggle" id="userDropdownToggle" title="Tài khoản">
-                            <i class="fa-solid fa-user user-icon"></i>
+                    <div class="user-menu">
+                        <button class="user-btn" id="userBtn" onclick="toggleUserMenu()">
+                            <i class="fas fa-user"></i>
+                            <span id="userBtnText">Tài khoản</span>
+                            <i class="fas fa-chevron-down"></i>
                         </button>
-                        <div class="user-dropdown-menu" id="userDropdownMenu">
-                            <div class="dropdown-header">
-                                <span class="user-menu-name" id="userMenuName">Tài khoản</span>
-                            </div>
+                        <div class="user-dropdown" id="userDropdown">
                             <a href="account.html" class="dropdown-item">Hồ sơ / Đơn hàng</a>
                             <a href="checkout.html" class="dropdown-item">Thanh toán</a>
-                            <button class="dropdown-item" onclick="logout()">Đăng xuất</button>
+                            <a href="#" class="dropdown-item" id="logoutBtn" onclick="handleLogout(event)" style="display: none;">Đăng xuất</a>
                         </div>
                     </div>
                 </div>
@@ -91,76 +82,8 @@
         </div>
     </header>
 
-    <!-- Checkout Page -->
-    <section id="checkout" class="checkout-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Thanh toán</h2>
-                <p class="section-subtitle">Nhập thông tin giao hàng và xác nhận đơn hàng</p>
-            </div>
-
-            <div class="checkout-layout">
-                <div class="checkout-form-block">
-                    <h3>Thông tin giao hàng</h3>
-                    
-                    <!-- Saved Addresses List -->
-                    <div id="savedAddressesList" class="saved-addresses-list">
-                        <!-- Saved addresses will be rendered here -->
-                    </div>
-                    
-                    <!-- Toggle button -->
-                    <div class="address-toggle-wrapper">
-                        <button type="button" class="btn-link" id="toggleNewAddressBtn" onclick="toggleNewAddressForm()">+ Thêm địa chỉ mới</button>
-                    </div>
-                    
-                    <!-- New Address Form -->
-                    <form id="checkoutForm" onsubmit="submitCheckout(event)">
-                        <div id="newAddressForm" style="display: none;">
-                            <div class="form-group">
-                                <label>Họ và tên</label>
-                                <input type="text" id="shippingName" required />
-                                <span class="error-message" id="shippingNameError"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Số điện thoại</label>
-                                <input type="tel" id="shippingPhone" required />
-                                <span class="error-message" id="shippingPhoneError"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Địa chỉ giao hàng</label>
-                                <textarea id="shippingAddress" rows="3" required></textarea>
-                                <span class="error-message" id="shippingAddressError"></span>
-                            </div>
-                            <div class="form-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="saveAddressCheckbox" />
-                                    <span>Lưu địa chỉ này cho lần sau</span>
-                                </label>
-                            </div>
-                            <button type="button" class="btn-secondary" onclick="saveCurrentAddressAsNew()">Lưu địa chỉ</button>
-                        </div>
-                        <div id="checkoutSuccessMessage" class="success-message" style="display: none;"></div>
-                        <span class="error-message" id="checkoutGeneralError"></span>
-                        <button type="submit" class="btn-primary btn-large">Xác nhận đơn hàng</button>
-                    </form>
-                </div>
-
-                <div class="checkout-summary-block">
-                    <h3>Tóm tắt đơn hàng</h3>
-                    <div id="checkoutSummaryItems" class="checkout-summary-items">
-                        <!-- Items sẽ được render bằng JavaScript -->
-                    </div>
-                    <div class="checkout-summary-total">
-                        <span>Tổng tiền:</span>
-                        <strong id="checkoutSummaryTotal">0₫</strong>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Order Confirmation Page -->
-    <section id="orderConfirmation" class="order-confirmation-section" style="display: none;">
+    <section id="orderConfirmation" class="order-confirmation-section">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Đặt hàng thành công</h2>

@@ -21,6 +21,45 @@ function getCurrentUserOrders(email) {
     return orders.filter(o => o.userEmail === email);
 }
 
+// Helper functions for checkout form errors
+function showCheckoutError(fieldId, message) {
+    const errorElement = document.getElementById(fieldId + 'Error');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = message ? 'block' : 'none';
+    }
+    const inputElement = document.getElementById(fieldId);
+    if (inputElement) {
+        inputElement.classList.toggle('error', !!message);
+    }
+}
+
+function clearCheckoutErrors() {
+    const errorElements = document.querySelectorAll('#checkoutForm .error-message');
+    errorElements.forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+    });
+    const inputElements = document.querySelectorAll('#checkoutForm input, #checkoutForm textarea');
+    inputElements.forEach(el => el.classList.remove('error'));
+}
+
+function showCheckoutSuccess(message) {
+    const successElement = document.getElementById('checkoutSuccessMessage');
+    if (successElement) {
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+    }
+}
+
+function hideCheckoutSuccess() {
+    const successElement = document.getElementById('checkoutSuccessMessage');
+    if (successElement) {
+        successElement.style.display = 'none';
+        successElement.textContent = '';
+    }
+}
+
 // Điều hướng từ giỏ hàng sang trang checkout
 function goToCheckout() {
     if (!isUserLoggedIn()) {
@@ -78,10 +117,12 @@ function renderCheckoutSummary() {
 // Submit checkout form
 function submitCheckout(event) {
     event.preventDefault();
+    clearCheckoutErrors();
+    hideCheckoutSuccess();
 
     // Kiểm tra lại user đã đăng nhập
     if (!isUserLoggedIn || !isUserLoggedIn()) {
-        alert('Vui lòng đăng nhập trước khi xác nhận đơn hàng.');
+        showCheckoutError('checkoutGeneral', 'Vui lòng đăng nhập trước khi xác nhận đơn hàng.');
         if (typeof openAuthModal === 'function') {
             openAuthModal('login');
         }
@@ -91,19 +132,20 @@ function submitCheckout(event) {
         return;
     }
 
-    // Kiểm tra lại có sản phẩm trong giỏ hàng
-    if (!cartManager || !cartManager.items || cartManager.items.length === 0) {
-        alert('Giỏ hàng đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.');
-        window.location.href = 'index.html';
-        return;
-    }
-
     const user = getCurrentUser();
+    // Kiểm tra lại có sản phẩm trong giỏ hàng
     if (!user) {
-        alert('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.');
+        clearCheckoutErrors();
+        showCheckoutError('checkoutGeneral', 'Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.');
         if (typeof openAuthModal === 'function') {
             openAuthModal('login');
         }
+        return;
+    }
+    
+    if (!cartManager || !cartManager.items || cartManager.items.length === 0) {
+        clearCheckoutErrors();
+        showCheckoutError('checkoutGeneral', 'Giỏ hàng đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.');
         return;
     }
 
@@ -121,7 +163,7 @@ function submitCheckout(event) {
             phone = selectedAddress.phone;
             address = selectedAddress.address;
         } else {
-            alert('Địa chỉ đã chọn không tồn tại. Vui lòng chọn lại.');
+            showCheckoutError('checkoutGeneral', 'Địa chỉ đã chọn không tồn tại. Vui lòng chọn lại.');
             return;
         }
     } else {
@@ -131,7 +173,7 @@ function submitCheckout(event) {
         const addressInput = document.getElementById('shippingAddress');
 
         if (!nameInput || !phoneInput || !addressInput) {
-            alert('Có lỗi xảy ra. Vui lòng tải lại trang.');
+            showCheckoutError('checkoutGeneral', 'Có lỗi xảy ra. Vui lòng tải lại trang.');
             return;
         }
 
@@ -140,21 +182,27 @@ function submitCheckout(event) {
         address = addressInput.value.trim();
 
         // Validation cho địa chỉ mới
+        let hasError = false;
+
         if (!name || name.length < 2) {
-            alert('Vui lòng nhập họ và tên hợp lệ (ít nhất 2 ký tự).');
+            showCheckoutError('shippingName', 'Vui lòng nhập họ và tên hợp lệ (ít nhất 2 ký tự).');
             if (nameInput) nameInput.focus();
-            return;
+            hasError = true;
         }
 
         if (!phone || !/^[0-9]{10,11}$/.test(phone)) {
-            alert('Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).');
+            showCheckoutError('shippingPhone', 'Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).');
             if (phoneInput) phoneInput.focus();
-            return;
+            hasError = true;
         }
 
         if (!address || address.length < 10) {
-            alert('Vui lòng nhập địa chỉ giao hàng đầy đủ (ít nhất 10 ký tự).');
+            showCheckoutError('shippingAddress', 'Vui lòng nhập địa chỉ giao hàng đầy đủ (ít nhất 10 ký tự).');
             if (addressInput) addressInput.focus();
+            hasError = true;
+        }
+
+        if (hasError) {
             return;
         }
     }
@@ -199,21 +247,28 @@ function submitCheckout(event) {
         checkoutForm.reset();
     }
     
+    // Clear errors and show success message
+    clearCheckoutErrors();
+    showCheckoutSuccess('Đơn hàng đã được đặt thành công! Đang chuyển hướng...');
+    
     // Re-render saved addresses
     if (typeof renderSavedAddresses === 'function') {
         renderSavedAddresses();
     }
 
-    // Chuyển đến trang xác nhận đơn hàng
-    showOrderConfirmation(order);
+    // Chuyển đến trang xác nhận đơn hàng sau 1.5 giây
+    setTimeout(() => {
+        hideCheckoutSuccess();
+        showOrderConfirmation(order);
+    }, 1500);
 }
 
 function showOrderConfirmation(order) {
     // Store order in sessionStorage for order confirmation page
     sessionStorage.setItem('lastOrder', JSON.stringify(order));
     
-    // Redirect to checkout page with order confirmation
-    window.location.href = 'checkout.html';
+    // Redirect to order confirmation page
+    window.location.href = 'order-confirmation.html';
 }
 
 function showOrderConfirmationPage(order) {
