@@ -67,63 +67,69 @@ function updateAuthUI() {
 
 function openAuthModal(defaultTab) {
     const modal = document.getElementById('authModal');
-    if (modal) {
-        clearAllErrors();
-        hideSuccessMessage();
-        modal.style.display = 'block';
-    }
+    if (modal) modal.style.display = 'block';
     if (defaultTab) {
         switchAuthTab(defaultTab);
-    } else {
-        switchAuthTab('login');
+    }
+    // Clear errors and hide success messages when opening modal
+    clearAllErrors();
+    hideSuccessMessage();
+}
+
+// Helper functions for error messages
+function showError(fieldId, message) {
+    const errorElement = document.getElementById(fieldId + 'Error');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = message ? 'block' : 'none';
+    }
+    const inputElement = document.getElementById(fieldId);
+    if (inputElement) {
+        inputElement.classList.toggle('error', !!message);
     }
 }
 
-function initAuth() {
-    loadCurrentUser();
-    updateAuthUI();
-    setupAuthFormHelpers();
+function clearError(fieldId) {
+    showError(fieldId, '');
 }
 
-// Setup password toggle and form helpers
-function setupAuthFormHelpers() {
-    // Toggle password visibility
-    const toggleLoginPassword = document.getElementById('toggleLoginPassword');
-    const toggleRegisterPassword = document.getElementById('toggleRegisterPassword');
-    const toggleRegisterConfirmPassword = document.getElementById('toggleRegisterConfirmPassword');
-    
-    if (toggleLoginPassword) {
-        toggleLoginPassword.addEventListener('click', function() {
-            togglePasswordVisibility('loginPassword', this);
-        });
+function clearAllErrors() {
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+    });
+    const inputElements = document.querySelectorAll('#authModal input');
+    inputElements.forEach(el => el.classList.remove('error'));
+}
+
+// Helper functions for success messages
+function showSuccessMessage(message, formType) {
+    const successElement = document.getElementById(formType + 'SuccessMessage');
+    if (successElement) {
+        successElement.textContent = message;
+        successElement.style.display = 'block';
     }
-    
-    if (toggleRegisterPassword) {
-        toggleRegisterPassword.addEventListener('click', function() {
-            togglePasswordVisibility('registerPassword', this);
-        });
-    }
-    
-    if (toggleRegisterConfirmPassword) {
-        toggleRegisterConfirmPassword.addEventListener('click', function() {
-            togglePasswordVisibility('registerConfirmPassword', this);
-        });
-    }
-    
-    // Clear errors on input
-    const inputs = document.querySelectorAll('#authModal input');
-    inputs.forEach(input => {
-        input.addEventListener('input', function() {
-            clearError(this.id);
-            this.classList.remove('error');
-            this.classList.add('success');
-        });
+}
+
+function hideSuccessMessage() {
+    const successElements = document.querySelectorAll('.success-message');
+    successElements.forEach(el => {
+        el.style.display = 'none';
+        el.textContent = '';
     });
 }
 
-function togglePasswordVisibility(inputId, button) {
+// Email validation helper
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Setup password visibility toggle
+function togglePasswordVisibility(inputId, buttonElement) {
     const input = document.getElementById(inputId);
-    const icon = button.querySelector('i');
+    const icon = buttonElement.querySelector('i');
     if (input.type === 'password') {
         input.type = 'text';
         icon.classList.remove('fa-eye');
@@ -135,66 +141,23 @@ function togglePasswordVisibility(inputId, button) {
     }
 }
 
-function showError(inputId, message) {
-    const input = document.getElementById(inputId);
-    const errorElement = document.getElementById(inputId + 'Error');
-    
-    if (input) {
-        input.classList.remove('success');
-        input.classList.add('error');
-    }
-    
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.add('show');
-    }
-}
-
-function clearError(inputId) {
-    const input = document.getElementById(inputId);
-    const errorElement = document.getElementById(inputId + 'Error');
-    
-    if (input) {
-        input.classList.remove('error');
-    }
-    
-    if (errorElement) {
-        errorElement.textContent = '';
-        errorElement.classList.remove('show');
-    }
-}
-
-function clearAllErrors() {
-    const errorElements = document.querySelectorAll('.error-message');
-    errorElements.forEach(el => {
-        el.textContent = '';
-        el.classList.remove('show');
-    });
-    
+// Setup auth form helpers (clear errors on input)
+function setupAuthFormHelpers() {
     const inputs = document.querySelectorAll('#authModal input');
     inputs.forEach(input => {
-        input.classList.remove('error', 'success');
+        input.addEventListener('input', function() {
+            const fieldId = this.id;
+            clearError(fieldId);
+        });
     });
 }
 
-function showSuccessMessage(message) {
-    const successElement = document.getElementById('authSuccessMessage');
-    const successText = document.getElementById('authSuccessText');
-    
-    if (successElement && successText) {
-        successText.textContent = message;
-        successElement.style.display = 'flex';
-        
-        setTimeout(() => {
-            successElement.style.display = 'none';
-        }, 3000);
-    }
-}
-
-function hideSuccessMessage() {
-    const successElement = document.getElementById('authSuccessMessage');
-    if (successElement) {
-        successElement.style.display = 'none';
+function initAuth() {
+    loadCurrentUser();
+    updateAuthUI();
+    // Setup form helpers when auth modal is available
+    if (document.getElementById('authModal')) {
+        setupAuthFormHelpers();
     }
 }
 
@@ -204,7 +167,7 @@ function switchAuthTab(tabName) {
     const registerForm = document.getElementById('registerForm');
     const authTabs = document.querySelectorAll('.auth-tab');
     
-    // Clear all errors and success message when switching tabs
+    // Clear errors and hide success messages when switching tabs
     clearAllErrors();
     hideSuccessMessage();
     
@@ -230,13 +193,13 @@ function handleLogin(event) {
     event.preventDefault();
     clearAllErrors();
     hideSuccessMessage();
-    
+
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
-    
-    // Validation
+
     let hasError = false;
-    
+
+    // Validate email
     if (!email) {
         showError('loginEmail', 'Vui lòng nhập email.');
         hasError = true;
@@ -244,29 +207,31 @@ function handleLogin(event) {
         showError('loginEmail', 'Email không hợp lệ.');
         hasError = true;
     }
-    
+
+    // Validate password
     if (!password) {
         showError('loginPassword', 'Vui lòng nhập mật khẩu.');
         hasError = true;
     }
-    
+
     if (hasError) {
         return;
     }
-    
+
     const users = loadUsers();
     const user = users.find(u => u.email === email && u.password === password);
     
     if (!user) {
         showError('loginEmail', 'Email hoặc mật khẩu không đúng.');
-        showError('loginPassword', '');
+        showError('loginPassword', ''); // Clear password error if email is the main issue
         return;
     }
     
     setCurrentUser(user);
-    showSuccessMessage('Đăng nhập thành công!');
+    showSuccessMessage('Đăng nhập thành công!', 'login');
     document.getElementById('loginFormElement').reset();
-    
+
+    // Close modal and redirect after showing success message
     setTimeout(() => {
         closeModal('authModal');
         hideSuccessMessage();
@@ -275,9 +240,7 @@ function handleLogin(event) {
         if (lastRoute) {
             switch (lastRoute) {
                 case 'checkout':
-                    if (typeof goToCheckout === 'function') {
-                        goToCheckout();
-                    }
+                    window.location.href = 'checkout.html';
                     break;
                 case 'cart':
                     if (typeof cartManager !== 'undefined') {
@@ -287,14 +250,10 @@ function handleLogin(event) {
                     }
                     break;
                 case 'account':
-                    if (typeof showAccountPage === 'function') {
-                        showAccountPage(null);
-                    }
+                    window.location.href = 'account.html';
                     break;
                 case 'products':
-                    if (typeof showProductsPage === 'function') {
-                        showProductsPage(null);
-                    }
+                    window.location.href = 'products.html';
                     break;
                 default:
                     break;
@@ -304,33 +263,26 @@ function handleLogin(event) {
     }, 1500);
 }
 
-function isValidEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-}
-
 // Handle register
 function handleRegister(event) {
     event.preventDefault();
     clearAllErrors();
     hideSuccessMessage();
-    
+
     const name = document.getElementById('registerName').value.trim();
     const email = document.getElementById('registerEmail').value.trim();
     const password = document.getElementById('registerPassword').value.trim();
     const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
-    
-    // Validation
+
     let hasError = false;
-    
+
+    // Validate name
     if (!name) {
         showError('registerName', 'Vui lòng nhập họ và tên.');
         hasError = true;
-    } else if (name.length < 2) {
-        showError('registerName', 'Họ và tên phải có ít nhất 2 ký tự.');
-        hasError = true;
     }
-    
+
+    // Validate email
     if (!email) {
         showError('registerEmail', 'Vui lòng nhập email.');
         hasError = true;
@@ -338,7 +290,8 @@ function handleRegister(event) {
         showError('registerEmail', 'Email không hợp lệ.');
         hasError = true;
     }
-    
+
+    // Validate password
     if (!password) {
         showError('registerPassword', 'Vui lòng nhập mật khẩu.');
         hasError = true;
@@ -346,15 +299,16 @@ function handleRegister(event) {
         showError('registerPassword', 'Mật khẩu phải có ít nhất 6 ký tự.');
         hasError = true;
     }
-    
+
+    // Validate confirm password
     if (!confirmPassword) {
         showError('registerConfirmPassword', 'Vui lòng nhập lại mật khẩu.');
         hasError = true;
-    } else if (password && password !== confirmPassword) {
+    } else if (password !== confirmPassword) {
         showError('registerConfirmPassword', 'Mật khẩu xác nhận không khớp.');
         hasError = true;
     }
-    
+
     if (hasError) {
         return;
     }
@@ -370,14 +324,13 @@ function handleRegister(event) {
     users.push(newUser);
     saveUsers(users);
     
-    showSuccessMessage('Đăng ký thành công! Vui lòng đăng nhập.');
+    showSuccessMessage('Đăng ký thành công! Đang chuyển đến form đăng nhập...', 'register');
     document.getElementById('registerFormElement').reset();
-    
+
+    // Switch to login tab after showing success message
     setTimeout(() => {
-        switchAuthTab('login');
-        // Pre-fill email in login form
-        document.getElementById('loginEmail').value = email;
         hideSuccessMessage();
+        switchAuthTab('login');
     }, 1500);
 }
 

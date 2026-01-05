@@ -236,6 +236,11 @@ function changeModalImage(imageUrl, buttonElement) {
 
 // Toggle favorite from modal
 function toggleFavoriteFromModal(productId) {
+    if (!isUserLoggedIn()) {
+        alert('Vui lòng đăng nhập để thêm sản phẩm vào mục yêu thích.');
+        openAuthModal('login');
+        return;
+    }
     favoritesManager.toggleFavorite(productId);
     showProductModal(productId); // Refresh modal to update favorite button
 }
@@ -285,7 +290,7 @@ function initModalSuggestedProducts(currentProductId) {
         const otherProducts = products.filter(
             p => p.id !== currentProductId && p.category !== currentProduct.category
         );
-    const shuffled = [...otherProducts].sort(() => 0.5 - Math.random());
+        const shuffled = [...otherProducts].sort(() => 0.5 - Math.random());
         suggested = [...suggested, ...shuffled].slice(0, 4);
     } else {
         // Randomize same category products and take 4

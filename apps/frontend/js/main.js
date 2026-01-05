@@ -11,31 +11,88 @@ document.addEventListener('DOMContentLoaded', function() {
     cartManager.init();
     favoritesManager.init();
     
-    // Render initial products
-    initCarousel();
-    initFeaturedProductsFullWidth();
-    initRotationProducts();
-    initShopByIcons();
-    initLatestProducts();
-    filterAndSortProducts();
-    initSuggestedProducts();
-    initPromoBanners();
+    // Set active nav link based on current page
+    setActiveNavLink();
     
-    // Setup event listeners
+    // Get current page from window.location
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    
+    // Initialize components based on current page
+    if (currentPage === 'index.html' || currentPage === '' || currentPage === 'index.html' || !currentPage.includes('.')) {
+        // Home page - render all home sections
+        initCarousel();
+        initFeaturedProductsFullWidth();
+        initRotationProducts();
+        initShopByIcons();
+        initLatestProducts();
+        initSuggestedProducts();
+        initPromoBanners();
+        
+        // Hide sections that should not show on home page initially
+        const latest = document.getElementById('latest');
+        const products = document.getElementById('products');
+        const suggested = document.querySelector('.suggested-section');
+        const support = document.getElementById('support');
+        
+        if (latest) latest.style.display = 'none';
+        if (products) products.style.display = 'none';
+        if (suggested) suggested.style.display = 'none';
+        if (support) support.style.display = 'none';
+    } else if (currentPage === 'products.html') {
+        // Products page - initialize products filter and render
+        filterAndSortProducts();
+    } else if (currentPage === 'checkout.html') {
+        // Checkout page - render checkout summary and saved addresses
+        if (typeof renderCheckoutSummary === 'function') {
+            renderCheckoutSummary();
+        }
+        if (typeof renderSavedAddresses === 'function') {
+            renderSavedAddresses();
+        }
+        
+        // Check if there's a pending order confirmation
+        const lastOrder = sessionStorage.getItem('lastOrder');
+        if (lastOrder) {
+            try {
+                const order = JSON.parse(lastOrder);
+                showOrderConfirmationPage(order);
+                sessionStorage.removeItem('lastOrder');
+            } catch (e) {
+                console.error('Error parsing last order:', e);
+            }
+        }
+    } else if (currentPage === 'account.html') {
+        // Account page - render account page
+        if (typeof renderAccountPage === 'function') {
+            renderAccountPage();
+        }
+    }
+    
+    // Setup event listeners (always needed)
     setupEventListeners();
     initMobileMenu();
-    
-    // Hide sections that should not show on home page initially
-    const latest = document.getElementById('latest');
-    const products = document.getElementById('products');
-    const suggested = document.querySelector('.suggested-section');
-    const support = document.getElementById('support');
-    
-    if (latest) latest.style.display = 'none';
-    if (products) products.style.display = 'none';
-    if (suggested) suggested.style.display = 'none';
-    if (support) support.style.display = 'none';
 });
+
+// Set active nav link based on current page
+function setActiveNavLink() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        const href = link.getAttribute('href');
+        
+        if (currentPage === 'index.html' || currentPage === '' || !currentPage.includes('.')) {
+            if (href === 'index.html' || href === '#') {
+                link.classList.add('active');
+            }
+        } else if (currentPage === 'products.html' && href === 'products.html') {
+            link.classList.add('active');
+        } else if (currentPage === 'support.html' && href === 'support.html') {
+            link.classList.add('active');
+        }
+    });
+}
 
 // Setup event listeners
 function setupEventListeners() {
@@ -73,17 +130,12 @@ function setupEventListeners() {
                 addToSearchHistory(searchValue);
             }
             // Chuyển đến trang sản phẩm nếu đang ở trang khác
-            if (typeof showProductsPage === 'function') {
-                showProductsPage(null);
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            if (currentPage !== 'products.html') {
+                window.location.href = 'products.html';
+                return;
             }
             filterAndSortProducts();
-            // Scroll to products section
-            setTimeout(() => {
-                const productsSection = document.getElementById('products');
-                if (productsSection) {
-                    productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 100);
         }
     }
     

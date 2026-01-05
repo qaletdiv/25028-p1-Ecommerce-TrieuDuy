@@ -13,7 +13,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
-                    <a href="#" class="logo" onclick="showHomePage(event)">
+                    <a href="index.html" class="logo">
                         <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
                             <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
@@ -46,9 +46,9 @@
                 </button>
                 
                 <nav class="nav" id="mainNav">
-                    <a href="#" class="nav-link active" onclick="showHomePage(event)">Trang chủ</a>
-                    <a href="#products" class="nav-link" onclick="showProductsPage(event)">Sản phẩm</a>
-                    <a href="#support" class="nav-link" onclick="showSupportPage(event)">Liên hệ</a>
+                    <a href="index.html" class="nav-link active">Trang chủ</a>
+                    <a href="products.html" class="nav-link">Sản phẩm</a>
+                    <a href="support.html" class="nav-link">Liên hệ</a>
                 </nav>
                 
                 <div class="search-bar">
@@ -83,8 +83,8 @@
                             <div class="dropdown-header">
                                 <span class="user-menu-name" id="userMenuName">Tài khoản</span>
                             </div>
-                            <button class="dropdown-item" onclick="showAccountPage(event)">Hồ sơ / Đơn hàng</button>
-                            <button class="dropdown-item" onclick="goToCheckout()">Thanh toán</button>
+                        <a href="account.html" class="dropdown-item">Hồ sơ / Đơn hàng</a>
+                        <a href="checkout.html" class="dropdown-item">Thanh toán</a>
                             <button class="dropdown-item" onclick="logout()">Đăng xuất</button>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
             <div class="rotation-header">
                 <h2 class="rotation-title">Làm mới bộ sưu tập</h2>
                 <div class="rotation-controls">
-                    <button class="btn-rotation-shop" onclick="showProductsPage(event)">Mua ngay</button>
+                        <a href="products.html" class="btn-rotation-shop">Mua ngay</a>
                     <button class="rotation-nav-btn" onclick="scrollRotationProducts(-1)">‹</button>
                     <button class="rotation-nav-btn" onclick="scrollRotationProducts(1)">›</button>
                 </div>
@@ -145,10 +145,10 @@
 
     <!-- Promotional Banners -->
     <section class="promo-banners">
-        <div class="promo-banner" id="promoBanner1" onclick="showProductsPage(event)">
+        <div class="promo-banner" id="promoBanner1" onclick="window.location.href='products.html'">
             <!-- Banner 1 will be rendered by JavaScript -->
         </div>
-        <div class="promo-banner" id="promoBanner2" onclick="showProductsPage(event)">
+        <div class="promo-banner" id="promoBanner2" onclick="window.location.href='products.html'">
             <!-- Banner 2 will be rendered by JavaScript -->
         </div>
     </section>
@@ -183,73 +183,6 @@
         </div>
     </section>
 
-    <!-- All Products -->
-    <section id="products" class="products-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Tất cả sản phẩm</h2>
-                <p class="section-subtitle" id="productCount">0 sản phẩm phù hợp</p>
-            </div>
-
-            <!-- Filters and Sort -->
-            <div class="filters-bar">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label>Danh mục</label>
-                        <select id="categoryFilter" class="filter-select">
-                            <option value="">Tất cả</option>
-                            <option value="Giày">Giày</option>
-                            <option value="Dép">Dép</option>
-                            <option value="Áo">Áo</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Giá từ</label>
-                        <input type="number" id="minPriceFilter" class="filter-input" placeholder="0" value="0" />
-                    </div>
-                    <div class="filter-group">
-                        <label>Giá đến</label>
-                        <input type="number" id="maxPriceFilter" class="filter-input" placeholder="10000000" value="10000000" />
-                    </div>
-                    <div class="filter-group">
-                        <label>Đánh giá tối thiểu</label>
-                        <select id="minRatingFilter" class="filter-select">
-                            <option value="0">Tất cả</option>
-                            <option value="4">4★ trở lên</option>
-                            <option value="4.5">4.5★ trở lên</option>
-                            <option value="4.7">4.7★ trở lên</option>
-                            <option value="4.8">4.8★ trở lên</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Sắp xếp</label>
-                        <select id="sortFilter" class="filter-select">
-                            <option value="default">Liên quan</option>
-                            <option value="price-asc">Giá tăng dần</option>
-                            <option value="price-desc">Giá giảm dần</option>
-                            <option value="name-asc">Tên A-Z</option>
-                            <option value="name-desc">Tên Z-A</option>
-                            <option value="rating-desc">Đánh giá cao nhất</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <button class="btn-clear-filter" onclick="clearFilters()">Xóa lọc</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Products Grid -->
-            <div id="productsGrid" class="products-grid">
-                <!-- Products will be rendered here by JavaScript -->
-            </div>
-
-            <!-- Pagination -->
-            <div id="pagination" class="pagination">
-                <!-- Pagination will be rendered here -->
-            </div>
-        </div>
-    </section>
-
     <!-- Suggested Products -->
     <section class="suggested-section">
         <div class="container">
@@ -263,8 +196,7 @@
         </div>
     </section>
 
-    <!-- Support Section -->
-    <section id="support" class="support-section">
+    <!-- Product Modal -->
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Hỗ trợ khách hàng</h2>
@@ -829,8 +761,8 @@
                 </div>
 
                 <div class="order-confirmation-actions">
-                    <button class="btn-primary" onclick="showHomePage(event)">Tiếp tục mua sắm</button>
-                    <button class="btn-secondary" onclick="showAccountPage(event)">Xem lịch sử đơn hàng</button>
+                    <a href="index.html" class="btn-primary">Tiếp tục mua sắm</a>
+                    <a href="account.html" class="btn-secondary">Xem lịch sử đơn hàng</a>
                 </div>
             </div>
         </div>
@@ -917,10 +849,10 @@
                 <div class="footer-section">
                     <h3>Liên kết nhanh</h3>
                     <ul>
-                        <li><a href="#">Trang chủ</a></li>
-                        <li><a href="#products">Sản phẩm</a></li>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="products.html">Sản phẩm</a></li>
                         <li><a href="#">Giới thiệu</a></li>
-                        <li><a href="#">Liên hệ</a></li>
+                        <li><a href="support.html">Liên hệ</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">

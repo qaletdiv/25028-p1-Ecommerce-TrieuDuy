@@ -37,46 +37,13 @@ function goToCheckout() {
         return;
     }
 
-    // Render tóm tắt đơn hàng
-    renderCheckoutSummary();
-
-    // Render saved addresses
-    if (typeof renderSavedAddresses === 'function') {
-        renderSavedAddresses();
+    // Đóng modal giỏ hàng nếu đang mở
+    if (typeof closeModal === 'function') {
+        closeModal('cartModal');
     }
 
-    // Ẩn các section khác, chỉ hiển thị checkout
-    const sectionsToHide = ['featured', 'latest', 'products', 'support'];
-    const heroCarousel = document.querySelector('.hero-carousel');
-    const signatureSection = document.querySelector('.signature-section');
-    const rotationSection = document.querySelector('.sneaker-rotation-section');
-    const iconsSection = document.querySelector('.shop-by-icons-section');
-    const promoBanners = document.querySelector('.promo-banners');
-    const suggested = document.querySelector('.suggested-section');
-    const checkout = document.getElementById('checkout');
-    const orderConfirmation = document.getElementById('orderConfirmation');
-    const account = document.getElementById('account');
-
-    if (heroCarousel) heroCarousel.style.display = 'none';
-    if (signatureSection) signatureSection.style.display = 'none';
-    if (rotationSection) rotationSection.style.display = 'none';
-    if (iconsSection) iconsSection.style.display = 'none';
-    if (promoBanners) promoBanners.style.display = 'none';
-    if (suggested) suggested.style.display = 'none';
-
-    sectionsToHide.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    if (orderConfirmation) orderConfirmation.style.display = 'none';
-    if (account) account.style.display = 'none';
-    if (checkout) checkout.style.display = 'block';
-
-    // Đóng modal giỏ hàng nếu đang mở
-    closeModal('cartModal');
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Redirect to checkout page
+    window.location.href = 'checkout.html';
 }
 
 function renderCheckoutSummary() {
@@ -116,7 +83,7 @@ function submitCheckout(event) {
     if (!isUserLoggedIn || !isUserLoggedIn()) {
         alert('Vui lòng đăng nhập trước khi xác nhận đơn hàng.');
         if (typeof openAuthModal === 'function') {
-        openAuthModal('login');
+            openAuthModal('login');
         }
         if (typeof setLastRoute === 'function') {
             setLastRoute('checkout');
@@ -127,9 +94,7 @@ function submitCheckout(event) {
     // Kiểm tra lại có sản phẩm trong giỏ hàng
     if (!cartManager || !cartManager.items || cartManager.items.length === 0) {
         alert('Giỏ hàng đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.');
-        if (typeof showHomePage === 'function') {
-            showHomePage(null);
-        }
+        window.location.href = 'index.html';
         return;
     }
 
@@ -143,14 +108,15 @@ function submitCheckout(event) {
     }
 
     // Kiểm tra xem user đã chọn địa chỉ đã lưu hay nhập mới
-    const selectedAddressRadio = document.querySelector('input[name="selectedAddress"]:checked');
+    const selectedAddressItem = document.querySelector('.saved-address-item.active');
     let name, phone, address;
     
-    if (selectedAddressRadio && typeof loadUserAddresses === 'function') {
-        // User chọn địa chỉ đã lưu
-        const addresses = loadUserAddresses();
-        const selectedAddress = addresses.find(addr => addr.id === selectedAddressRadio.value);
-        if (selectedAddress) {
+    if (selectedAddressItem && selectedAddressItem.dataset.index !== undefined) {
+        // User chọn địa chỉ đã lưu - use the address index
+        const addressIndex = parseInt(selectedAddressItem.dataset.index);
+        const user = getCurrentUser();
+        if (user && user.addresses && user.addresses[addressIndex]) {
+            const selectedAddress = user.addresses[addressIndex];
             name = selectedAddress.name;
             phone = selectedAddress.phone;
             address = selectedAddress.address;
@@ -176,19 +142,19 @@ function submitCheckout(event) {
         // Validation cho địa chỉ mới
         if (!name || name.length < 2) {
             alert('Vui lòng nhập họ và tên hợp lệ (ít nhất 2 ký tự).');
-            nameInput.focus();
+            if (nameInput) nameInput.focus();
             return;
         }
 
         if (!phone || !/^[0-9]{10,11}$/.test(phone)) {
             alert('Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).');
-            phoneInput.focus();
-        return;
+            if (phoneInput) phoneInput.focus();
+            return;
         }
 
         if (!address || address.length < 10) {
             alert('Vui lòng nhập địa chỉ giao hàng đầy đủ (ít nhất 10 ký tự).');
-            addressInput.focus();
+            if (addressInput) addressInput.focus();
             return;
         }
     }
@@ -213,11 +179,11 @@ function submitCheckout(event) {
 
     // Lưu đơn hàng vào user (lịch sử)
     addOrderToUser(order);
-
+    
     // Lưu địa chỉ nếu user nhập mới và chọn lưu
     const saveAddressCheckbox = document.getElementById('saveAddressCheckbox');
-    if (!selectedAddressRadio && saveAddressCheckbox && saveAddressCheckbox.checked && typeof addUserAddress === 'function') {
-        const shippingInfo = { name, phone, address, isDefault: false };
+    if (!selectedAddressItem && saveAddressCheckbox && saveAddressCheckbox.checked && typeof addUserAddress === 'function') {
+        const shippingInfo = { name, phone, address, default: false };
         addUserAddress(shippingInfo);
     }
 
@@ -232,7 +198,7 @@ function submitCheckout(event) {
     if (checkoutForm) {
         checkoutForm.reset();
     }
-
+    
     // Re-render saved addresses
     if (typeof renderSavedAddresses === 'function') {
         renderSavedAddresses();
@@ -243,25 +209,18 @@ function submitCheckout(event) {
 }
 
 function showOrderConfirmation(order) {
+    // Store order in sessionStorage for order confirmation page
+    sessionStorage.setItem('lastOrder', JSON.stringify(order));
+    
+    // Redirect to checkout page with order confirmation
+    window.location.href = 'checkout.html';
+}
+
+function showOrderConfirmationPage(order) {
     const checkout = document.getElementById('checkout');
     const orderConfirmation = document.getElementById('orderConfirmation');
-    const account = document.getElementById('account');
-    const heroCarousel = document.querySelector('.hero-carousel');
-    const signatureSection = document.querySelector('.signature-section');
-    const rotationSection = document.querySelector('.sneaker-rotation-section');
-    const iconsSection = document.querySelector('.shop-by-icons-section');
-    const promoBanners = document.querySelector('.promo-banners');
-    const featured = document.getElementById('featured');
-    const latest = document.getElementById('latest');
-    const products = document.getElementById('products');
-    const suggested = document.querySelector('.suggested-section');
-    const support = document.getElementById('support');
-
-    [heroCarousel, signatureSection, rotationSection, iconsSection, promoBanners,
-     featured, latest, products, suggested, support, checkout, account].forEach(el => {
-        if (el) el.style.display = 'none';
-    });
-
+    
+    if (checkout) checkout.style.display = 'none';
     if (orderConfirmation) orderConfirmation.style.display = 'block';
 
     const summaryEl = document.getElementById('orderConfirmationSummary');
@@ -335,33 +294,8 @@ function showAccountPage(event) {
         return;
     }
 
-    const heroCarousel = document.querySelector('.hero-carousel');
-    const signatureSection = document.querySelector('.signature-section');
-    const rotationSection = document.querySelector('.sneaker-rotation-section');
-    const iconsSection = document.querySelector('.shop-by-icons-section');
-    const promoBanners = document.querySelector('.promo-banners');
-    const featured = document.getElementById('featured');
-    const latest = document.getElementById('latest');
-    const products = document.getElementById('products');
-    const suggested = document.querySelector('.suggested-section');
-    const support = document.getElementById('support');
-    const checkout = document.getElementById('checkout');
-    const orderConfirmation = document.getElementById('orderConfirmation');
-    const account = document.getElementById('account');
-
-    [heroCarousel, signatureSection, rotationSection, iconsSection, promoBanners,
-     featured, latest, products, suggested, support, checkout, orderConfirmation].forEach(el => {
-        if (el) el.style.display = 'none';
-    });
-
-    if (account) account.style.display = 'block';
-
-    renderAccountPage();
-
-    // Cập nhật active nav (không có link riêng nên chỉ bỏ active ở tất cả)
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Redirect to account page
+    window.location.href = 'account.html';
 }
 
 function renderAccountPage() {

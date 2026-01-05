@@ -19,6 +19,12 @@ const favoritesManager = {
     
     // Toggle favorite
     toggleFavorite(productId) {
+        if (!isUserLoggedIn()) {
+            alert('Vui lòng đăng nhập để thêm sản phẩm vào mục yêu thích.');
+            openAuthModal('login');
+            return;
+        }
+        
         const index = this.favorites.indexOf(productId);
         
         if (index > -1) {
